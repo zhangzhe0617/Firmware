@@ -54,7 +54,7 @@
 #include <debug.h>
 #include <errno.h>
 
-#include <nuttx/arch.h>
+#include "platform/cxxinitialize.h"
 #include <nuttx/board.h>
 #include <nuttx/spi/spi.h>
 #include <nuttx/i2c/i2c_master.h>
@@ -165,14 +165,22 @@ __EXPORT void board_peripheral_reset(int ms)
  ************************************************************************************/
 __EXPORT void board_on_reset(int status)
 {
-	UNUSED(status);
 	/* configure the GPIO pins to outputs and keep them low */
+
 	stm32_configgpio(GPIO_GPIO0_OUTPUT);
 	stm32_configgpio(GPIO_GPIO1_OUTPUT);
 	stm32_configgpio(GPIO_GPIO2_OUTPUT);
 	stm32_configgpio(GPIO_GPIO3_OUTPUT);
 	stm32_configgpio(GPIO_GPIO4_OUTPUT);
 	stm32_configgpio(GPIO_GPIO5_OUTPUT);
+
+	/* On resets invoked from system (not boot) insure we establish a low
+	 * output state (discharge the pins) on PWM pins before they become inputs.
+	 */
+
+	if (status >= 0) {
+		up_mdelay(400);
+	}
 }
 
 /************************************************************************************
@@ -205,6 +213,7 @@ stm32_boardinitialize(void)
 	/* configure power supply control/sense pins */
 	stm32_configgpio(GPIO_PERIPH_3V3_EN);
 	stm32_configgpio(GPIO_VDD_BRICK_VALID);
+	stm32_configgpio(GPIO_VDD_USB_VALID);
 
 	/* Start with Sensor voltage off We will enable it
 	 * in board_app_initialize
@@ -489,7 +498,7 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 	SPI_SETFREQUENCY(spi2, 20 * 1000 * 1000);
 	SPI_SETBITS(spi2, 8);
 	SPI_SETMODE(spi2, SPIDEV_MODE3);
-	SPI_SELECT(spi2, SPIDEV_FLASH, false);
+	SPI_SELECT(spi2, SPIDEV_FLASH(0), false);
 	SPI_SELECT(spi2, PX4_SPIDEV_BARO, false);
 
 #ifdef CONFIG_MMCSD

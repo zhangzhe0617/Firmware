@@ -51,7 +51,7 @@ using namespace sensors;
 using namespace DriverFramework;
 
 
-const double VotedSensorsUpdate::_msl_pressure = 101.325f;
+const double VotedSensorsUpdate::_msl_pressure = 101.325;
 
 VotedSensorsUpdate::VotedSensorsUpdate(const Parameters &parameters, bool hil_enabled)
 	: _parameters(parameters), _hil_enabled(hil_enabled)
@@ -62,6 +62,7 @@ VotedSensorsUpdate::VotedSensorsUpdate(const Parameters &parameters, bool hil_en
 	memset(&_last_baro_timestamp, 0, sizeof(_last_baro_timestamp));
 	memset(&_accel_diff, 0, sizeof(_accel_diff));
 	memset(&_gyro_diff, 0, sizeof(_gyro_diff));
+	memset(&_mag_diff, 0, sizeof(_mag_diff));
 
 	// initialise the corrections
 	memset(&_corrections, 0, sizeof(_corrections));
@@ -142,6 +143,11 @@ void VotedSensorsUpdate::parameters_update()
 
 	_board_rotation = board_rotation_offset * _board_rotation;
 
+	// initialze all mag rotations with the board rotation in case there is no calibration data available
+	for (int topic_instance = 0; topic_instance < MAG_COUNT_MAX; ++topic_instance) {
+		_mag_rotation[topic_instance] = _board_rotation;
+	}
+
 	/* Load & apply the sensor calibrations.
 	 * IMPORTANT: we assume all sensor drivers are running and published sensor data at this point
 	 */
@@ -162,10 +168,10 @@ void VotedSensorsUpdate::parameters_update()
 				if (temp < 0) {
 					PX4_ERR("gyro temp compensation init: failed to find device ID %u for instance %i",
 						report.device_id, topic_instance);
-					_corrections.gyro_mapping[topic_instance] =  0;
+					_corrections.gyro_mapping[topic_instance] = 0;
 
 				} else {
-					_corrections.gyro_mapping[topic_instance] =  temp;
+					_corrections.gyro_mapping[topic_instance] = temp;
 
 				}
 			}
@@ -186,10 +192,10 @@ void VotedSensorsUpdate::parameters_update()
 				if (temp < 0) {
 					PX4_ERR("accel temp compensation init: failed to find device ID %u for instance %i",
 						report.device_id, topic_instance);
-					_corrections.accel_mapping[topic_instance] =  0;
+					_corrections.accel_mapping[topic_instance] = 0;
 
 				} else {
-					_corrections.accel_mapping[topic_instance] =  temp;
+					_corrections.accel_mapping[topic_instance] = temp;
 
 				}
 			}
@@ -209,10 +215,10 @@ void VotedSensorsUpdate::parameters_update()
 				if (temp < 0) {
 					PX4_ERR("baro temp compensation init: failed to find device ID %u for instance %i",
 						report.device_id, topic_instance);
-					_corrections.baro_mapping[topic_instance] =  0;
+					_corrections.baro_mapping[topic_instance] = 0;
 
 				} else {
-					_corrections.baro_mapping[topic_instance] =  temp;
+					_corrections.baro_mapping[topic_instance] = temp;
 
 				}
 			}
@@ -223,16 +229,15 @@ void VotedSensorsUpdate::parameters_update()
 	/* set offset parameters to new values */
 	bool failed;
 	char str[30];
-	unsigned mag_count = 0;
 	unsigned gyro_count = 0;
 	unsigned accel_count = 0;
 	unsigned gyro_cal_found_count = 0;
 	unsigned accel_cal_found_count = 0;
 
 	/* run through all gyro sensors */
-	for (unsigned s = 0; s < GYRO_COUNT_MAX; s++) {
+	for (unsigned driver_index = 0; driver_index < GYRO_COUNT_MAX; driver_index++) {
 
-		(void)sprintf(str, "%s%u", GYRO_BASE_DEVICE_PATH, s);
+		(void)sprintf(str, "%s%u", GYRO_BASE_DEVICE_PATH, driver_index);
 
 		DevHandle h;
 		DevMgr::getHandle(str, h);
@@ -250,15 +255,20 @@ void VotedSensorsUpdate::parameters_update()
 			failed = false;
 
 			(void)sprintf(str, "CAL_GYRO%u_ID", i);
-			int device_id;
+			int32_t device_id;
 			failed = failed || (OK != param_get(param_find(str), &device_id));
 
+			(void)sprintf(str, "CAL_GYRO%u_EN", i);
+			int32_t device_enabled = 1;
+			failed = failed || (OK != param_get(param_find(str), &device_enabled));
+
+			_gyro.enabled[i] = (device_enabled == 1);
+
 			if (failed) {
-				DevMgr::releaseHandle(h);
 				continue;
 			}
 
-			if (s == 0 && device_id > 0) {
+			if (driver_index == 0 && device_id > 0) {
 				gyro_cal_found_count++;
 			}
 
@@ -306,16 +316,16 @@ void VotedSensorsUpdate::parameters_update()
 		// run through all stored calibrations and reset them
 		for (unsigned i = 0; i < GYRO_COUNT_MAX; i++) {
 
-			int device_id = 0;
+			int32_t device_id = 0;
 			(void)sprintf(str, "CAL_GYRO%u_ID", i);
 			(void)param_set(param_find(str), &device_id);
 		}
 	}
 
 	/* run through all accel sensors */
-	for (unsigned s = 0; s < ACCEL_COUNT_MAX; s++) {
+	for (unsigned driver_index = 0; driver_index < ACCEL_COUNT_MAX; driver_index++) {
 
-		(void)sprintf(str, "%s%u", ACCEL_BASE_DEVICE_PATH, s);
+		(void)sprintf(str, "%s%u", ACCEL_BASE_DEVICE_PATH, driver_index);
 
 		DevHandle h;
 		DevMgr::getHandle(str, h);
@@ -333,15 +343,20 @@ void VotedSensorsUpdate::parameters_update()
 			failed = false;
 
 			(void)sprintf(str, "CAL_ACC%u_ID", i);
-			int device_id;
+			int32_t device_id;
 			failed = failed || (OK != param_get(param_find(str), &device_id));
 
+			(void)sprintf(str, "CAL_ACC%u_EN", i);
+			int32_t device_enabled = 1;
+			failed = failed || (OK != param_get(param_find(str), &device_enabled));
+
+			_accel.enabled[i] = (device_enabled == 1);
+
 			if (failed) {
-				DevMgr::releaseHandle(h);
 				continue;
 			}
 
-			if (s == 0 && device_id > 0) {
+			if (driver_index == 0 && device_id > 0) {
 				accel_cal_found_count++;
 			}
 
@@ -389,32 +404,53 @@ void VotedSensorsUpdate::parameters_update()
 		// run through all stored calibrations and reset them
 		for (unsigned i = 0; i < ACCEL_COUNT_MAX; i++) {
 
-			int device_id = 0;
+			int32_t device_id = 0;
 			(void)sprintf(str, "CAL_ACC%u_ID", i);
 			(void)param_set(param_find(str), &device_id);
 		}
 	}
 
-	/* run through all mag sensors */
-	for (unsigned s = 0; s < MAG_COUNT_MAX; s++) {
+	/* run through all mag sensors
+	 * Because we store the device id in _mag_device_id, we need to get the id via uorb topic since
+	 * the DevHandle method does not work on POSIX.
+	 */
+	for (unsigned topic_instance = 0; topic_instance < MAG_COUNT_MAX && topic_instance < _mag.subscription_count;
+	     ++topic_instance) {
 
-		/* set a valid default rotation (same as board).
-		 * if the mag is configured, this might be replaced
-		 * in the section below.
-		 */
-		_mag_rotation[s] = _board_rotation;
+		struct mag_report report;
 
-		(void)sprintf(str, "%s%u", MAG_BASE_DEVICE_PATH, s);
-
-		DevHandle h;
-		DevMgr::getHandle(str, h);
-
-		if (!h.isValid()) {
-			/* the driver is not running, abort */
+		if (orb_copy(ORB_ID(sensor_mag), _mag.subscription[topic_instance], &report) != 0) {
 			continue;
 		}
 
-		_mag_device_id[s] = h.ioctl(DEVIOCGDEVICEID, 0);
+		int topic_device_id = report.device_id;
+		bool is_external = report.is_external;
+		_mag_device_id[topic_instance] = topic_device_id;
+
+		// find the driver handle that matches the topic_device_id
+		DevHandle h;
+
+		for (unsigned driver_index = 0; driver_index < MAG_COUNT_MAX; ++driver_index) {
+
+			(void)sprintf(str, "%s%u", MAG_BASE_DEVICE_PATH, driver_index);
+
+			DevMgr::getHandle(str, h);
+
+			if (!h.isValid()) {
+				/* the driver is not running, continue with the next */
+				continue;
+			}
+
+			int driver_device_id = h.ioctl(DEVIOCGDEVICEID, 0);
+
+			if (driver_device_id == topic_device_id) {
+				break; // we found the matching driver
+
+			} else {
+				DevMgr::releaseHandle(h);
+			}
+		}
+
 		bool config_ok = false;
 
 		/* run through all stored calibrations */
@@ -423,18 +459,21 @@ void VotedSensorsUpdate::parameters_update()
 			failed = false;
 
 			(void)sprintf(str, "CAL_MAG%u_ID", i);
-			int device_id;
+			int32_t device_id;
 			failed = failed || (OK != param_get(param_find(str), &device_id));
-			(void)sprintf(str, "CAL_MAG%u_ROT", i);
-			(void)param_find(str);
+
+			(void)sprintf(str, "CAL_MAG%u_EN", i);
+			int32_t device_enabled = 1;
+			failed = failed || (OK != param_get(param_find(str), &device_enabled));
+
+			_mag.enabled[i] = (device_enabled == 1);
 
 			if (failed) {
-				DevMgr::releaseHandle(h);
 				continue;
 			}
 
 			/* if the calibration is for this device, apply it */
-			if (device_id == _mag_device_id[s]) {
+			if (device_id == _mag_device_id[topic_instance]) {
 				struct mag_calibration_s mscale = {};
 				(void)sprintf(str, "CAL_MAG%u_XOFF", i);
 				failed = failed || (OK != param_get(param_find(str), &mscale.x_offset));
@@ -451,29 +490,34 @@ void VotedSensorsUpdate::parameters_update()
 
 				(void)sprintf(str, "CAL_MAG%u_ROT", i);
 
-				if (h.ioctl(MAGIOCGEXTERNAL, 0) <= 0) {
-					/* mag is internal */
-					_mag_rotation[s] = _board_rotation;
-					/* reset param to -1 to indicate internal mag */
-					int32_t minus_one;
-					param_get(param_find(str), &minus_one);
+				int32_t mag_rot;
+				param_get(param_find(str), &mag_rot);
 
-					if (minus_one != MAG_ROT_VAL_INTERNAL) {
-						minus_one = MAG_ROT_VAL_INTERNAL;
-						param_set_no_notification(param_find(str), &minus_one);
-					}
+				if (is_external) {
 
-				} else {
-
-					int32_t mag_rot;
-					param_get(param_find(str), &mag_rot);
-
-					/* check if this mag is still set as internal */
+					/* check if this mag is still set as internal, otherwise leave untouched */
 					if (mag_rot < 0) {
 						/* it was marked as internal, change to external with no rotation */
 						mag_rot = 0;
 						param_set_no_notification(param_find(str), &mag_rot);
 					}
+
+				} else {
+					/* mag is internal - reset param to -1 to indicate internal mag */
+					if (mag_rot != MAG_ROT_VAL_INTERNAL) {
+						mag_rot = MAG_ROT_VAL_INTERNAL;
+						param_set_no_notification(param_find(str), &mag_rot);
+					}
+				}
+
+				/* now get the mag rotation */
+				if (mag_rot >= 0) {
+					// Set external magnetometers to use the parameter value
+					get_rot_matrix((enum Rotation)mag_rot, &_mag_rotation[topic_instance]);
+
+				} else {
+					// Set internal magnetometers to use the board rotation
+					_mag_rotation[topic_instance] = _board_rotation;
 				}
 
 				if (failed) {
@@ -492,10 +536,6 @@ void VotedSensorsUpdate::parameters_update()
 				break;
 			}
 		}
-
-		if (config_ok) {
-			mag_count++;
-		}
 	}
 
 }
@@ -509,7 +549,7 @@ void VotedSensorsUpdate::accel_poll(struct sensor_combined_s &raw)
 		bool accel_updated;
 		orb_check(_accel.subscription[uorb_index], &accel_updated);
 
-		if (accel_updated) {
+		if (accel_updated && _accel.enabled[uorb_index]) {
 			struct accel_report accel_report;
 
 			orb_copy(ORB_ID(sensor_accel), _accel.subscription[uorb_index], &accel_report);
@@ -542,7 +582,7 @@ void VotedSensorsUpdate::accel_poll(struct sensor_combined_s &raw)
 				accel_data = math::Vector<3>(accel_report.x_integral * dt_inv, accel_report.y_integral * dt_inv,
 							     accel_report.z_integral * dt_inv);
 
-				_last_sensor_data[uorb_index].accelerometer_integral_dt = accel_report.integral_dt / 1.e6f;
+				_last_sensor_data[uorb_index].accelerometer_integral_dt = accel_report.integral_dt;
 
 			} else {
 				// using the value instead of the integral (the integral is the prefered choice)
@@ -558,7 +598,7 @@ void VotedSensorsUpdate::accel_poll(struct sensor_combined_s &raw)
 
 				// approximate the  delta time using the difference in accel data time stamps
 				_last_sensor_data[uorb_index].accelerometer_integral_dt =
-					(accel_report.timestamp - _last_accel_timestamp[uorb_index]) / 1.e6f;
+					(accel_report.timestamp - _last_accel_timestamp[uorb_index]);
 			}
 
 			// handle temperature compensation
@@ -616,7 +656,7 @@ void VotedSensorsUpdate::gyro_poll(struct sensor_combined_s &raw)
 		bool gyro_updated;
 		orb_check(_gyro.subscription[uorb_index], &gyro_updated);
 
-		if (gyro_updated) {
+		if (gyro_updated && _gyro.enabled[uorb_index]) {
 			struct gyro_report gyro_report;
 
 			orb_copy(ORB_ID(sensor_gyro), _gyro.subscription[uorb_index], &gyro_report);
@@ -649,7 +689,7 @@ void VotedSensorsUpdate::gyro_poll(struct sensor_combined_s &raw)
 				gyro_rate = math::Vector<3>(gyro_report.x_integral * dt_inv, gyro_report.y_integral * dt_inv,
 							    gyro_report.z_integral * dt_inv);
 
-				_last_sensor_data[uorb_index].gyro_integral_dt = gyro_report.integral_dt / 1.e6f;
+				_last_sensor_data[uorb_index].gyro_integral_dt = gyro_report.integral_dt;
 
 			} else {
 				//using the value instead of the integral (the integral is the prefered choice)
@@ -665,7 +705,7 @@ void VotedSensorsUpdate::gyro_poll(struct sensor_combined_s &raw)
 
 				// approximate the  delta time using the difference in gyro data time stamps
 				_last_sensor_data[uorb_index].gyro_integral_dt =
-					(gyro_report.timestamp - _last_sensor_data[uorb_index].timestamp) / 1.e6f;
+					(gyro_report.timestamp - _last_sensor_data[uorb_index].timestamp);
 			}
 
 			// handle temperature compensation
@@ -721,7 +761,7 @@ void VotedSensorsUpdate::mag_poll(struct sensor_combined_s &raw)
 		bool mag_updated;
 		orb_check(_mag.subscription[uorb_index], &mag_updated);
 
-		if (mag_updated) {
+		if (mag_updated && _mag.enabled[uorb_index]) {
 			struct mag_report mag_report;
 
 			orb_copy(ORB_ID(sensor_mag), _mag.subscription[uorb_index], &mag_report);
@@ -732,30 +772,14 @@ void VotedSensorsUpdate::mag_poll(struct sensor_combined_s &raw)
 
 			// First publication with data
 			if (_mag.priority[uorb_index] == 0) {
+
+				// Parameters update to get offsets, scaling & mag rotation loaded (if not already loaded)
+				parameters_update();
+
+				// Set device priority for the voter
 				int32_t priority = 0;
 				orb_priority(_mag.subscription[uorb_index], &priority);
 				_mag.priority[uorb_index] = (uint8_t)priority;
-
-				// Match rotation parameters to uORB topics first time we get data
-				char str[30];
-				int32_t mag_rot;
-
-				for (int driver_index = 0; driver_index < MAG_COUNT_MAX; driver_index++) {
-					if (mag_report.device_id == _mag_device_id[driver_index]) {
-
-						(void)sprintf(str, "CAL_MAG%u_ROT", driver_index);
-						param_get(param_find(str), &mag_rot);
-
-						if (mag_rot < 0) {
-							// Set internal magnetometers to use the board rotation
-							_mag_rotation[uorb_index] = _board_rotation;
-
-						} else {
-							// Set external magnetometers to use the paramter value
-							get_rot_matrix((enum Rotation)mag_rot, &_mag_rotation[uorb_index]);
-						}
-					}
-				}
 			}
 
 			math::Vector<3> vect(mag_report.x, mag_report.y, mag_report.z);
@@ -914,14 +938,21 @@ bool VotedSensorsUpdate::check_failover(SensorData &sensor, const char *sensor_n
 			}
 
 		} else {
-			mavlink_log_emergency(&_mavlink_log_pub, "%s #%i fail: %s%s%s%s%s!",
-					      sensor_name,
-					      sensor.voter.failover_index(),
-					      ((flags & DataValidator::ERROR_FLAG_NO_DATA) ? " OFF" : ""),
-					      ((flags & DataValidator::ERROR_FLAG_STALE_DATA) ? " STALE" : ""),
-					      ((flags & DataValidator::ERROR_FLAG_TIMEOUT) ? " TOUT" : ""),
-					      ((flags & DataValidator::ERROR_FLAG_HIGH_ERRCOUNT) ? " ECNT" : ""),
-					      ((flags & DataValidator::ERROR_FLAG_HIGH_ERRDENSITY) ? " EDNST" : ""));
+			int failover_index = sensor.voter.failover_index();
+
+			if (failover_index != -1) {
+				mavlink_log_emergency(&_mavlink_log_pub, "%s #%i fail: %s%s%s%s%s!",
+						      sensor_name,
+						      failover_index,
+						      ((flags & DataValidator::ERROR_FLAG_NO_DATA) ? " OFF" : ""),
+						      ((flags & DataValidator::ERROR_FLAG_STALE_DATA) ? " STALE" : ""),
+						      ((flags & DataValidator::ERROR_FLAG_TIMEOUT) ? " TIMEOUT" : ""),
+						      ((flags & DataValidator::ERROR_FLAG_HIGH_ERRCOUNT) ? " ERR CNT" : ""),
+						      ((flags & DataValidator::ERROR_FLAG_HIGH_ERRDENSITY) ? " ERR DNST" : ""));
+
+				// reduce priority of failed sensor to the minimum
+				sensor.priority[failover_index] = 1;
+			}
 		}
 
 		sensor.last_failover_count = sensor.voter.failover_count();
@@ -929,34 +960,6 @@ bool VotedSensorsUpdate::check_failover(SensorData &sensor, const char *sensor_n
 	}
 
 	return false;
-}
-
-bool VotedSensorsUpdate::check_vibration()
-{
-	bool ret = false;
-	hrt_abstime cur_time = hrt_absolute_time();
-
-	if (!_vibration_warning && (_gyro.voter.get_vibration_factor(cur_time) > _parameters.vibration_warning_threshold ||
-				    _accel.voter.get_vibration_factor(cur_time) > _parameters.vibration_warning_threshold ||
-				    _mag.voter.get_vibration_factor(cur_time) > _parameters.vibration_warning_threshold)) {
-
-		if (_vibration_warning_timestamp == 0) {
-			_vibration_warning_timestamp = cur_time;
-
-		} else if (hrt_elapsed_time(&_vibration_warning_timestamp) > 10000 * 1000) {
-			_vibration_warning = true;
-			mavlink_log_critical(&_mavlink_log_pub, "HIGH VIBRATION! g: %d a: %d m: %d",
-					     (int)(100 * _gyro.voter.get_vibration_factor(cur_time)),
-					     (int)(100 * _accel.voter.get_vibration_factor(cur_time)),
-					     (int)(100 * _mag.voter.get_vibration_factor(cur_time)));
-			ret = true;
-		}
-
-	} else {
-		_vibration_warning_timestamp = 0;
-	}
-
-	return ret;
 }
 
 void VotedSensorsUpdate::init_sensor_class(const struct orb_metadata *meta, SensorData &sensor_data,
@@ -1030,13 +1033,17 @@ VotedSensorsUpdate::apply_accel_calibration(DevHandle &h, const struct accel_cal
 bool
 VotedSensorsUpdate::apply_mag_calibration(DevHandle &h, const struct mag_calibration_s *mcal, const int device_id)
 {
-#if !defined(__PX4_QURT) && !defined(__PX4_POSIX_RPI) && !defined(__PX4_POSIX_BEBOP)
+#if !defined(__PX4_QURT) && !defined(__PX4_POSIX)
+
+	if (!h.isValid()) {
+		return false;
+	}
 
 	/* On most systems, we can just use the IOCTL call to set the calibration params. */
 	return !h.ioctl(MAGIOCSSCALE, (long unsigned int)mcal);
 
 #else
-	/* On QURT, the params are read directly in the respective wrappers. */
+	/* On QURT & POSIX, the params are read directly in the respective wrappers. */
 	return true;
 #endif
 }
@@ -1201,4 +1208,51 @@ void VotedSensorsUpdate::calc_gyro_inconsistency(sensor_preflight_s &preflt)
 	}
 }
 
+void VotedSensorsUpdate::calc_mag_inconsistency(sensor_preflight_s &preflt)
+{
+	float mag_diff_sum_max_sq = 0.0f; // the maximum sum of axis differences squared
+	unsigned check_index = 0; // the number of sensors the primary has been checked against
 
+	// Check each sensor against the primary
+	for (unsigned sensor_index = 0; sensor_index < _mag.subscription_count; sensor_index++) {
+
+		// check that the sensor we are checking against is not the same as the primary
+		if ((_mag.priority[sensor_index] > 0) && (sensor_index != _mag.last_best_vote)) {
+
+			float mag_diff_sum_sq = 0.0f; // sum of differences squared for a single sensor comparison against the primary
+
+			// calculate mag_diff_sum_sq for the specified sensor against the primary
+			for (unsigned axis_index = 0; axis_index < 3; axis_index++) {
+				_mag_diff[axis_index][check_index] = 0.95f * _mag_diff[axis_index][check_index] + 0.05f *
+								     (_last_sensor_data[_mag.last_best_vote].magnetometer_ga[axis_index] -
+								      _last_sensor_data[sensor_index].magnetometer_ga[axis_index]);
+				mag_diff_sum_sq += _mag_diff[axis_index][check_index] * _mag_diff[axis_index][check_index];
+
+			}
+
+			// capture the largest sum value
+			if (mag_diff_sum_sq > mag_diff_sum_max_sq) {
+				mag_diff_sum_max_sq = mag_diff_sum_sq;
+
+			}
+
+			// increment the check index
+			check_index++;
+		}
+
+		// check to see if the maximum number of checks has been reached and break
+		if (check_index >= 2) {
+			break;
+
+		}
+	}
+
+	// skip check if less than 2 sensors
+	if (check_index < 1) {
+		preflt.mag_inconsistency_ga = 0.0f;
+
+	} else {
+		// get the vector length of the largest difference and write to the combined sensor struct
+		preflt.mag_inconsistency_ga = sqrtf(mag_diff_sum_max_sq);
+	}
+}

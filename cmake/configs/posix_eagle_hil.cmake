@@ -20,15 +20,16 @@ endif()
 
 set(config_module_list
 	drivers/device
-	drivers/boards/sitl
+	drivers/boards
 	drivers/led
+	drivers/linux_sbus
 
 	systemcmds/param
 	systemcmds/ver
 
 	modules/mavlink
 
-	modules/param
+	modules/systemlib/param
 	modules/systemlib
 	modules/uORB
 	modules/sensors

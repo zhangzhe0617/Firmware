@@ -55,7 +55,7 @@
 #include <debug.h>
 #include <errno.h>
 
-#include <nuttx/arch.h>
+#include "platform/cxxinitialize.h"
 #include <nuttx/board.h>
 #include <nuttx/analog/adc.h>
 
@@ -369,13 +369,6 @@ __EXPORT int board_app_initialize(uintptr_t arg)
 	drv_led_start();
 	led_off(LED_AMBER);
 	led_off(LED_BLUE);
-
-	result = board_i2c_initialize();
-
-	if (result != OK) {
-		led_on(LED_AMBER);
-		return -ENODEV;
-	}
 
 #if defined(FLASH_BASED_PARAMS)
 	static sector_descriptor_t  sector_map[] = {

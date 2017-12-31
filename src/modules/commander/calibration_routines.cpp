@@ -664,7 +664,7 @@ enum detect_orientation_return detect_orientation(orb_advert_t *mavlink_log_pub,
 		return DETECT_ORIENTATION_RIGHTSIDE_UP;        // [ 0, 0, -g ]
 	}
 
-	calibration_log_critical(mavlink_log_pub, "[cal] ERROR: invalid orientation");
+	calibration_log_critical(mavlink_log_pub, "ERROR: invalid orientation");
 
 	return DETECT_ORIENTATION_ERROR;	// Can't detect orientation
 }
@@ -759,6 +759,7 @@ calibrate_return calibrate_from_orientation(orb_advert_t *mavlink_log_pub,
 		/* inform user about already handled side */
 		if (side_data_collected[orient]) {
 			orientation_failures++;
+			set_tune(TONE_NOTIFY_NEGATIVE_TUNE);
 			calibration_log_info(mavlink_log_pub, "[cal] %s side already completed", detect_orientation_str(orient));
 			usleep(20000);
 			continue;
@@ -784,8 +785,10 @@ calibrate_return calibrate_from_orientation(orb_advert_t *mavlink_log_pub,
 
 		// Note that this side is complete
 		side_data_collected[orient] = true;
+
 		// output neutral tune
 		set_tune(TONE_NOTIFY_NEUTRAL_TUNE);
+
 		// temporary priority boost for the white blinking led to come trough
 		rgbled_set_color_and_mode(led_control_s::COLOR_WHITE, led_control_s::MODE_BLINK_FAST, 3, 1);
 		usleep(200000);
@@ -833,23 +836,25 @@ bool calibrate_cancel_check(orb_advert_t *mavlink_log_pub, int cancel_sub)
 
 	if (px4_poll(&fds[0], 1, 0) > 0) {
 		struct vehicle_command_s cmd;
-		memset(&cmd, 0, sizeof(cmd));
 
 		orb_copy(ORB_ID(vehicle_command), cancel_sub, &cmd);
 
-		if (cmd.command == vehicle_command_s::VEHICLE_CMD_PREFLIGHT_CALIBRATION &&
-		    (int)cmd.param1 == 0 &&
-		    (int)cmd.param2 == 0 &&
-		    (int)cmd.param3 == 0 &&
-		    (int)cmd.param4 == 0 &&
-		    (int)cmd.param5 == 0 &&
-		    (int)cmd.param6 == 0) {
-			calibrate_answer_command(mavlink_log_pub, cmd, vehicle_command_s::VEHICLE_CMD_RESULT_ACCEPTED);
-			mavlink_log_critical(mavlink_log_pub, CAL_QGC_CANCELLED_MSG);
-			return true;
+		// ignore internal commands, such as VEHICLE_CMD_DO_MOUNT_CONTROL from vmount
+		if (cmd.from_external) {
+			if (cmd.command == vehicle_command_s::VEHICLE_CMD_PREFLIGHT_CALIBRATION &&
+					(int)cmd.param1 == 0 &&
+					(int)cmd.param2 == 0 &&
+					(int)cmd.param3 == 0 &&
+					(int)cmd.param4 == 0 &&
+					(int)cmd.param5 == 0 &&
+					(int)cmd.param6 == 0) {
+				calibrate_answer_command(mavlink_log_pub, cmd, vehicle_command_s::VEHICLE_CMD_RESULT_ACCEPTED);
+				mavlink_log_critical(mavlink_log_pub, CAL_QGC_CANCELLED_MSG);
+				return true;
 
-		} else {
-			calibrate_answer_command(mavlink_log_pub, cmd, vehicle_command_s::VEHICLE_CMD_RESULT_DENIED);
+			} else {
+				calibrate_answer_command(mavlink_log_pub, cmd, vehicle_command_s::VEHICLE_CMD_RESULT_DENIED);
+			}
 		}
 	}
 

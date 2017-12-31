@@ -343,13 +343,13 @@ class uploader(object):
                     uploader.EOC)
 
         # erase is very slow, give it 20s
-        deadline = time.time() + 20.0
+        deadline = time.time() + 30.0
         while time.time() < deadline:
 
             # Draw progress bar (erase usually takes about 9 seconds to complete)
             estimatedTimeRemaining = deadline-time.time()
             if estimatedTimeRemaining >= 9.0:
-                self.__drawProgressBar(label, 20.0-estimatedTimeRemaining, 9.0)
+                self.__drawProgressBar(label, 30.0-estimatedTimeRemaining, 9.0)
             else:
                 self.__drawProgressBar(label, 10.0, 10.0)
                 sys.stdout.write(" (timeout: %d seconds) " % int(deadline-time.time()))
@@ -615,8 +615,8 @@ def main():
     portnum = 14550
 
     # COMMAND_LONG in MAVLink 1
-    heartbeatpacket = 'fe097001010000000100020c5103033c8a'.decode('hex')
-    commandpacket = 'fe210101014c00000000000000000000000000000000000000000000803f00000000f6000000008459'.decode('hex')
+    heartbeatpacket = bytearray.fromhex('fe097001010000000100020c5103033c8a')
+    commandpacket = bytearray.fromhex('fe210101014c00000000000000000000000000000000000000000000803f00000000f6000000008459')
 
     # initialize an UDP socket
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

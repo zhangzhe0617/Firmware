@@ -59,6 +59,9 @@
 extern void led_on(int led);
 extern void led_off(int led);
 
+static struct timespec time_down;
+
+
 /************************************************************************************
  * Private Data
  ************************************************************************************/
@@ -66,7 +69,6 @@ extern void led_off(int led);
 /************************************************************************************
  * Private Functions
  ************************************************************************************/
-
 
 static int default_power_button_state_notification(board_power_button_state_notification_e request)
 {
@@ -80,6 +82,12 @@ static power_button_state_notification_t power_state_notification = default_powe
 int board_register_power_state_notification_cb(power_button_state_notification_t cb)
 {
 	power_state_notification = cb;
+
+	if (board_pwr_button_down() && (time_down.tv_nsec != 0 || time_down.tv_sec != 0)) {
+		// make sure we don't miss the first event
+		power_state_notification(PWR_BUTTON_DOWN);
+	}
+
 	return OK;
 }
 
@@ -97,10 +105,8 @@ int board_shutdown()
 	return 0;
 }
 
-static int board_button_irq(int irq, FAR void *context)
+static int board_button_irq(int irq, FAR void *context, FAR void *args)
 {
-	static struct timespec time_down;
-
 	if (board_pwr_button_down()) {
 
 		led_on(BOARD_LED_RED);
@@ -161,7 +167,7 @@ void board_pwr_init(int stage)
 	}
 
 	if (stage == 1) {
-		stm32_gpiosetevent(KEY_AD_GPIO, true, true, true, board_button_irq);
+		stm32_gpiosetevent(KEY_AD_GPIO, true, true, true, board_button_irq, NULL);
 	}
 }
 

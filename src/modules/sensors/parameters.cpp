@@ -42,7 +42,7 @@
 namespace sensors
 {
 
-int initialize_parameter_handles(ParameterHandles &parameter_handles)
+void initialize_parameter_handles(ParameterHandles &parameter_handles)
 {
 	/* basic r/c parameters */
 	for (unsigned i = 0; i < RC_MAX_CHAN_COUNT; i++) {
@@ -135,7 +135,9 @@ int initialize_parameter_handles(ParameterHandles &parameter_handles)
 
 	/* Differential pressure offset */
 	parameter_handles.diff_pres_offset_pa = param_find("SENS_DPRES_OFF");
+#ifdef ADC_AIRSPEED_VOLTAGE_CHANNEL
 	parameter_handles.diff_pres_analog_scale = param_find("SENS_DPRES_ANSC");
+#endif /* ADC_AIRSPEED_VOLTAGE_CHANNEL */
 
 	parameter_handles.battery_voltage_scaling = param_find("BAT_CNT_V_VOLT");
 	parameter_handles.battery_current_scaling = param_find("BAT_CNT_V_CURR");
@@ -155,20 +157,23 @@ int initialize_parameter_handles(ParameterHandles &parameter_handles)
 	/* Barometer QNH */
 	parameter_handles.baro_qnh = param_find("SENS_BARO_QNH");
 
-	parameter_handles.vibe_thresh = param_find("ATT_VIBE_THRESH");
+	parameter_handles.air_cmodel = param_find("CAL_AIR_CMODEL");
+	parameter_handles.air_tube_length = param_find("CAL_AIR_TUBELEN");
+	parameter_handles.air_tube_diameter_mm = param_find("CAL_AIR_TUBED_MM");
 
 	// These are parameters for which QGroundControl always expects to be returned in a list request.
 	// We do a param_find here to force them into the list.
 	(void)param_find("RC_CHAN_CNT");
-	(void)param_find("RC_TH_USER");
 	(void)param_find("CAL_ACC0_ID");
 	(void)param_find("CAL_GYRO0_ID");
 	(void)param_find("CAL_MAG0_ID");
 	(void)param_find("CAL_MAG1_ID");
 	(void)param_find("CAL_MAG2_ID");
+	(void)param_find("CAL_MAG3_ID");
 	(void)param_find("CAL_MAG0_ROT");
 	(void)param_find("CAL_MAG1_ROT");
 	(void)param_find("CAL_MAG2_ROT");
+	(void)param_find("CAL_MAG3_ROT");
 	(void)param_find("CAL_MAG_SIDES");
 
 	(void)param_find("CAL_MAG1_XOFF");
@@ -184,6 +189,13 @@ int initialize_parameter_handles(ParameterHandles &parameter_handles)
 	(void)param_find("CAL_MAG2_YSCALE");
 	(void)param_find("CAL_MAG2_ZOFF");
 	(void)param_find("CAL_MAG2_ZSCALE");
+
+	(void)param_find("CAL_MAG3_XOFF");
+	(void)param_find("CAL_MAG3_XSCALE");
+	(void)param_find("CAL_MAG3_YOFF");
+	(void)param_find("CAL_MAG3_YSCALE");
+	(void)param_find("CAL_MAG3_ZOFF");
+	(void)param_find("CAL_MAG3_ZSCALE");
 
 	(void)param_find("CAL_GYRO1_XOFF");
 	(void)param_find("CAL_GYRO1_XSCALE");
@@ -216,6 +228,7 @@ int initialize_parameter_handles(ParameterHandles &parameter_handles)
 	(void)param_find("SYS_PARAM_VER");
 	(void)param_find("SYS_AUTOSTART");
 	(void)param_find("SYS_AUTOCONFIG");
+	(void)param_find("SYS_HITL");
 	(void)param_find("PWM_RATE");
 	(void)param_find("PWM_MIN");
 	(void)param_find("PWM_MAX");
@@ -231,8 +244,6 @@ int initialize_parameter_handles(ParameterHandles &parameter_handles)
 	(void)param_find("SYS_CAL_TDEL");
 	(void)param_find("SYS_CAL_TMAX");
 	(void)param_find("SYS_CAL_TMIN");
-
-	return 0;
 }
 
 int update_parameters(const ParameterHandles &parameter_handles, Parameters &parameters)
@@ -346,11 +357,11 @@ int update_parameters(const ParameterHandles &parameter_handles, Parameters &par
 	}
 
 	if (param_get(parameter_handles.rc_map_stab_sw, &(parameters.rc_map_stab_sw)) != OK) {
-		warnx("%s", paramerr);
+		PX4_WARN("%s", paramerr);
 	}
 
 	if (param_get(parameter_handles.rc_map_man_sw, &(parameters.rc_map_man_sw)) != OK) {
-		warnx("%s", paramerr);
+		PX4_WARN("%s", paramerr);
 	}
 
 	param_get(parameter_handles.rc_map_aux1, &(parameters.rc_map_aux1));
@@ -417,7 +428,9 @@ int update_parameters(const ParameterHandles &parameter_handles, Parameters &par
 
 	/* Airspeed offset */
 	param_get(parameter_handles.diff_pres_offset_pa, &(parameters.diff_pres_offset_pa));
+#ifdef ADC_AIRSPEED_VOLTAGE_CHANNEL
 	param_get(parameter_handles.diff_pres_analog_scale, &(parameters.diff_pres_analog_scale));
+#endif /* ADC_AIRSPEED_VOLTAGE_CHANNEL */
 
 	/* scaling of ADC ticks to battery voltage */
 	if (param_get(parameter_handles.battery_voltage_scaling, &(parameters.battery_voltage_scaling)) != OK) {
@@ -476,7 +489,9 @@ int update_parameters(const ParameterHandles &parameter_handles, Parameters &par
 
 	param_get(parameter_handles.baro_qnh, &(parameters.baro_qnh));
 
-	param_get(parameter_handles.vibe_thresh, &parameters.vibration_warning_threshold);
+	param_get(parameter_handles.air_cmodel, &parameters.air_cmodel);
+	param_get(parameter_handles.air_tube_length, &parameters.air_tube_length);
+	param_get(parameter_handles.air_tube_diameter_mm, &parameters.air_tube_diameter_mm);
 
 	return ret;
 }

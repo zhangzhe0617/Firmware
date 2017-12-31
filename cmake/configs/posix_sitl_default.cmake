@@ -3,13 +3,19 @@ include(posix/px4_impl_posix)
 set(CMAKE_TOOLCHAIN_FILE ${PX4_SOURCE_DIR}/cmake/toolchains/Toolchain-native.cmake)
 
 set(config_module_list
-	drivers/boards/sitl
+	drivers/boards
 	drivers/camera_trigger
 	drivers/device
 	drivers/gps
 	drivers/pwm_out_sim
 	drivers/vmount
 	drivers/linux_gpio
+	drivers/airspeed
+	drivers/ets_airspeed
+	drivers/ms4525_airspeed
+	drivers/ms5525_airspeed
+	drivers/sdp3x_airspeed
+
 	modules/sensors
 	platforms/posix/drivers/accelsim
 	platforms/posix/drivers/adcsim
@@ -51,9 +57,14 @@ set(config_module_list
 	lib/controllib/controllib_test
 	modules/mavlink/mavlink_tests
 	modules/mc_pos_control/mc_pos_control_tests
-	modules/unit_test
 	modules/uORB/uORB_tests
 	systemcmds/tests
+
+	platforms/posix/tests/hello
+	platforms/posix/tests/hrt_test
+	platforms/posix/tests/muorb
+	platforms/posix/tests/vcdev_test
+	platforms/posix/tests/wqueue
 
 	#
 	# General system control
@@ -74,7 +85,6 @@ set(config_module_list
 	#
 	modules/attitude_estimator_q
 	modules/ekf2
-	modules/ekf2_replay
 	modules/local_position_estimator
 	modules/position_estimator_inav
 
@@ -83,6 +93,8 @@ set(config_module_list
 	#
 	modules/fw_att_control
 	modules/fw_pos_control_l1
+	modules/gnd_att_control
+	modules/gnd_pos_control
 	modules/mc_att_control
 	modules/mc_pos_control
 	modules/vtol_att_control
@@ -97,9 +109,8 @@ set(config_module_list
 	# Library modules
 	#
 	modules/dataman
-	modules/param
+	modules/systemlib/param
 	modules/systemlib
-	modules/systemlib/mixer
 	modules/uORB
 
 	#
@@ -109,11 +120,11 @@ set(config_module_list
 	lib/conversion
 	lib/DriverFramework/framework
 	lib/ecl
-	lib/external_lgpl
 	lib/geo
 	lib/geo_lookup
 	lib/launchdetection
 	lib/led
+	lib/mixer
 	lib/mathlib
 	lib/mathlib/math/filter
 	lib/rc
@@ -132,12 +143,17 @@ set(config_module_list
 	#
 	# OBC challenge
 	#
-	modules/bottle_drop
+	examples/bottle_drop
 
 	#
 	# Rover apps
 	#
 	examples/rover_steering_control
+
+	#
+	# HippoCampus example (AUV from TUHH)
+	#
+	examples/uuv_example_app
 
 	#
 	# Segway
@@ -166,37 +182,18 @@ set(config_module_list
 
 	# Hardware test
 	#examples/hwtest
-
-	# EKF
-	examples/ekf_att_pos_estimator
 )
-
-set(config_extra_builtin_cmds
-	serdis
-	sercon
-	)
 
 # Default config_sitl_rcS_dir (posix_sitl_default), this is overwritten later
 # for the config posix_sitl_efk2 and set again, explicitly, for posix_sitl_lpe,
 # which are based on posix_sitl_default.
-set(config_sitl_rcS_dir
-	posix-configs/SITL/init/ekf2
-	CACHE INTERNAL "init script dir for sitl"
-	)
+set(config_sitl_rcS_dir posix-configs/SITL/init/ekf2 CACHE INTERNAL "init script dir for sitl")
 
-set(config_sitl_viewer
-	jmavsim
-	CACHE STRING "viewer for sitl"
-	)
-set_property(CACHE config_sitl_viewer
-	PROPERTY STRINGS "jmavsim;none")
+set(config_sitl_viewer jmavsim CACHE STRING "viewer for sitl")
+set_property(CACHE config_sitl_viewer PROPERTY STRINGS "jmavsim;none")
 
-set(config_sitl_debugger
-	disable
-	CACHE STRING "debugger for sitl"
-	)
-set_property(CACHE config_sitl_debugger
-	PROPERTY STRINGS "disable;gdb;lldb")
+set(config_sitl_debugger disable CACHE STRING "debugger for sitl")
+set_property(CACHE config_sitl_debugger PROPERTY STRINGS "disable;gdb;lldb")
 
 # If the environment variable 'replay' is defined, we are building with replay
 # support. In this case, we enable the orb publisher rules.
@@ -205,4 +202,3 @@ if(REPLAY_FILE)
 	message("Building with uorb publisher rules support")
 	add_definitions(-DORB_USE_PUBLISHER_RULES)
 endif()
-

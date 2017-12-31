@@ -53,6 +53,7 @@ Battery::Battery() :
 	_param_crit_thr(this, "CRIT_THR"),
 	_param_emergency_thr(this, "EMERGEN_THR"),
 	_voltage_filtered_v(-1.0f),
+	_current_filtered_a(-1.0f),
 	_discharged_mah(0.0f),
 	_remaining_voltage(1.0f),
 	_remaining_capacity(1.0f),
@@ -83,7 +84,9 @@ Battery::reset(battery_status_s *battery_status)
 }
 
 void
-Battery::updateBatteryStatus(hrt_abstime timestamp, float voltage_v, float current_a, float throttle_normalized,
+Battery::updateBatteryStatus(hrt_abstime timestamp, float voltage_v, float current_a,
+			     bool connected, bool selected_source, int priority,
+			     float throttle_normalized,
 			     bool armed, battery_status_s *battery_status)
 {
 	reset(battery_status);
@@ -92,7 +95,7 @@ Battery::updateBatteryStatus(hrt_abstime timestamp, float voltage_v, float curre
 	filterCurrent(current_a);
 	sumDischarged(timestamp, current_a);
 	estimateRemaining(voltage_v, current_a, throttle_normalized, armed);
-	determineWarning();
+	determineWarning(connected);
 	computeScale();
 
 	if (_voltage_filtered_v > 2.1f) {
@@ -104,7 +107,9 @@ Battery::updateBatteryStatus(hrt_abstime timestamp, float voltage_v, float curre
 		battery_status->discharged_mah = _discharged_mah;
 		battery_status->warning = _warning;
 		battery_status->remaining = _remaining;
-		battery_status->connected = true;
+		battery_status->connected = connected;
+		battery_status->system_source = selected_source;
+		battery_status->priority = priority;
 	}
 }
 
@@ -217,17 +222,19 @@ Battery::estimateRemaining(float voltage_v, float current_a, float throttle_norm
 }
 
 void
-Battery::determineWarning()
+Battery::determineWarning(bool connected)
 {
-	// Smallest values must come first
-	if (_remaining < _param_emergency_thr.get()) {
-		_warning = battery_status_s::BATTERY_WARNING_EMERGENCY;
+	if (connected) {
+		// propagate warning state only if the state is higher, otherwise remain in current warning state
+		if (_remaining < _param_emergency_thr.get() || (_warning == battery_status_s::BATTERY_WARNING_EMERGENCY)) {
+			_warning = battery_status_s::BATTERY_WARNING_EMERGENCY;
 
-	} else if (_remaining < _param_crit_thr.get()) {
-		_warning = battery_status_s::BATTERY_WARNING_CRITICAL;
+		} else if (_remaining < _param_crit_thr.get() || (_warning == battery_status_s::BATTERY_WARNING_CRITICAL)) {
+			_warning = battery_status_s::BATTERY_WARNING_CRITICAL;
 
-	} else if (_remaining < _param_low_thr.get()) {
-		_warning = battery_status_s::BATTERY_WARNING_LOW;
+		} else if (_remaining < _param_low_thr.get() || (_warning == battery_status_s::BATTERY_WARNING_LOW)) {
+			_warning = battery_status_s::BATTERY_WARNING_LOW;
+		}
 	}
 }
 
