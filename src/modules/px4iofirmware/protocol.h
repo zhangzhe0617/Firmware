@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2012-2014 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2012-2017 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,6 +40,8 @@
  *
  * PX4IO interface protocol.
  *
+ * @author Lorenz Meier <lorenz@px4.io>
+ *
  * Communication is performed via writes to and reads from 16-bit virtual
  * registers organised into pages of 255 registers each.
  *
@@ -75,6 +77,8 @@
 
 #define REG_TO_FLOAT(_reg)	((float)REG_TO_SIGNED(_reg) / 10000.0f)
 #define FLOAT_TO_REG(_float)	SIGNED_TO_REG((int16_t)floorf((_float + 0.00005f) * 10000.0f))
+
+#define REG_TO_BOOL(_reg) 	((bool)(_reg))
 
 #define PX4IO_PROTOCOL_VERSION		4
 
@@ -229,6 +233,8 @@ enum {							/* DSM bind states */
 #define PX4IO_P_SETUP_SBUS_RATE			22	/* frame rate of SBUS1 output in Hz */
 
 #define PX4IO_P_SETUP_MOTOR_SLEW_MAX		24 	/* max motor slew rate */
+
+#define PX4IO_P_SETUP_AIRMODE 			27 	/* air-mode */
 
 #define PX4IO_P_SETUP_THR_MDL_FAC 		25	/* factor for modelling static pwm output to thrust relationship */
 
