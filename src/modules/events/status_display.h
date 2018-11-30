@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017-2018 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2017 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,7 +33,7 @@
 
 /**
  * @file status_display.h
- * Status Display decouples LED and tunes from commander
+ * Status Display decouple the LED and tune form the original commander
  *
  * @author Simone Guscetti <simone@px4.io>
  */
@@ -51,8 +51,6 @@
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/vehicle_status_flags.h>
 
-namespace events
-{
 namespace status
 {
 
@@ -68,7 +66,7 @@ public:
 protected:
 	/**
 	 * check for topic updates
-	 * @return true if one or more topics got updated
+	 * @return true if one or more topic got updated
 	 */
 	bool check_for_updates();
 
@@ -80,7 +78,7 @@ protected:
 	/** publish LED control */
 	void publish();
 
-	// TODO: review if there is a better variant that allocates this in the memory
+	// TODO: review if there is a better variant that allocate this in the memory
 	struct battery_status_s _battery_status = {};
 	struct cpuload_s _cpu_load = {};
 	struct vehicle_status_s _vehicle_status = {};
@@ -100,5 +98,4 @@ private:
 	const events::SubscriberHandler &_subscriber_handler;
 };
 
-} /* namespace status */
-} /* namespace events */
+} /* status */

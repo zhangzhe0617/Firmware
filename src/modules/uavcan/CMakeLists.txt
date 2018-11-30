@@ -34,33 +34,21 @@
 px4_add_git_submodule(TARGET git_uavcan PATH "libuavcan")
 
 set(UAVCAN_USE_CPP03 ON CACHE BOOL "uavcan cpp03")
-
-if(CONFIG_ARCH_CHIP)
-
-	if (${CONFIG_ARCH_CHIP} MATCHES "kinetis")
-		set(UAVCAN_PLATFORM "kinetis")
-		set(UAVCAN_TIMER 1)
-	elseif (${CONFIG_ARCH_CHIP} MATCHES "stm32")
-		set(UAVCAN_PLATFORM "stm32")
-		set(UAVCAN_TIMER 5) # The default timer the 5
-	endif()
-endif()
+set(UAVCAN_PLATFORM stm32 CACHE STRING "uavcan platform")
 
 if(NOT config_uavcan_num_ifaces)
 	message(FATAL_ERROR "config_uavcan_num_ifaces not set")
 endif()
 
-string(TOUPPER "${PX4_PLATFORM}" OS_UPPER)
-string(TOUPPER "${UAVCAN_PLATFORM}" UAVCAN_PLATFORM_UPPER)
+string(TOUPPER "${OS}" OS_UPPER)
 add_definitions(
 		-DUAVCAN_CPP_VERSION=UAVCAN_CPP03
 		-DUAVCAN_MEM_POOL_BLOCK_SIZE=48
 		-DUAVCAN_NO_ASSERTIONS
-		-DUAVCAN_PLATFORM=${UAVCAN_PLATFORM}
-		-DUAVCAN_DRIVER=uavcan_${UAVCAN_PLATFORM}
-		-DUAVCAN_${UAVCAN_PLATFORM_UPPER}_${OS_UPPER}=1
-		-DUAVCAN_${UAVCAN_PLATFORM_UPPER}_NUM_IFACES=${config_uavcan_num_ifaces}
-		-DUAVCAN_${UAVCAN_PLATFORM_UPPER}_TIMER_NUMBER=${UAVCAN_TIMER}
+		-DUAVCAN_PLATFORM=stm32
+		-DUAVCAN_STM32_${OS_UPPER}=1
+		-DUAVCAN_STM32_NUM_IFACES=${config_uavcan_num_ifaces}
+		-DUAVCAN_STM32_TIMER_NUMBER=5
 		)
 
 add_subdirectory(libuavcan EXCLUDE_FROM_ALL)
@@ -76,7 +64,7 @@ px4_add_module(
 		libuavcan/libuavcan/include
 		libuavcan/libuavcan/include/dsdlc_generated
 		libuavcan/libuavcan_drivers/posix/include
-		libuavcan/libuavcan_drivers/${UAVCAN_PLATFORM}/driver/include
+		libuavcan/libuavcan_drivers/stm32/driver/include
 	SRCS
 		# Main
 		uavcan_main.cpp
@@ -94,13 +82,10 @@ px4_add_module(
 		sensors/baro.cpp
 
 	DEPENDS
-		mixer
-		version
-
 		git_uavcan
-
-		# within libuavcan
-		libuavcan_dsdlc
+		platforms__common
 		uavcan
-		uavcan_${UAVCAN_PLATFORM}_driver
+		uavcan_stm32_driver
 	)
+
+target_link_libraries(modules__uavcan uavcan uavcan_stm32_driver)

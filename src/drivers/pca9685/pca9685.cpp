@@ -65,8 +65,9 @@
 #include <nuttx/wqueue.h>
 #include <nuttx/clock.h>
 
-#include <perf/perf_counter.h>
+#include <systemlib/perf_counter.h>
 #include <systemlib/err.h>
+#include <systemlib/systemlib.h>
 
 #include <uORB/uORB.h>
 #include <uORB/topics/actuator_controls.h>
@@ -112,7 +113,7 @@ class PCA9685 : public device::I2C
 {
 public:
 	PCA9685(int bus = PCA9685_BUS, uint8_t address = ADDR);
-	virtual ~PCA9685() = default;
+	virtual ~PCA9685();
 
 
 	virtual int		init();
@@ -196,6 +197,10 @@ PCA9685::PCA9685(int bus, uint8_t address) :
 	memset(&_work, 0, sizeof(_work));
 	memset(_msg, 0, sizeof(_msg));
 	memset(_current_values, 0, sizeof(_current_values));
+}
+
+PCA9685::~PCA9685()
+{
 }
 
 int

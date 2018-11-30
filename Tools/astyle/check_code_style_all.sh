@@ -5,7 +5,6 @@ set -eu
 ASTYLE_VER_REQUIRED_1="Artistic Style Version 2.06"
 ASTYLE_VER_REQUIRED_2="Artistic Style Version 3.0"
 ASTYLE_VER_REQUIRED_3="Artistic Style Version 3.0.1"
-ASTYLE_VER_REQUIRED_4="Artistic Style Version 3.1"
 
 astyle_ver() {
 	echo "PX4 requires at least ${ASTYLE_VER_REQUIRED_1}"
@@ -24,11 +23,10 @@ else
 
 	if [ "$ASTYLE_VER" != "$ASTYLE_VER_REQUIRED_1" -a \
 	     "$ASTYLE_VER" != "$ASTYLE_VER_REQUIRED_2" -a \
-	     "$ASTYLE_VER" != "$ASTYLE_VER_REQUIRED_3" -a \
-	     "$ASTYLE_VER" != "$ASTYLE_VER_REQUIRED_4" ];
+	     "$ASTYLE_VER" != "$ASTYLE_VER_REQUIRED_3" ];
 	then
 	    echo "Error: you're using ${ASTYLE_VER}"
-	    echo "but should be using ${ASTYLE_VER_REQUIRED_1}, ${ASTYLE_VER_REQUIRED_2}, ${ASTYLE_VER_REQUIRED_3}, or ${ASTYLE_VER_REQUIRED_4} instead"
+	    echo "but should be using ${ASTYLE_VER_REQUIRED_1}, ${ASTYLE_VER_REQUIRED_2}, or ${ASTYLE_VER_REQUIRED_3} instead"
 	    exit 1
 	fi
 fi

@@ -54,7 +54,7 @@
 #include <unistd.h>
 #include <getopt.h>
 
-#include <perf/perf_counter.h>
+#include <systemlib/perf_counter.h>
 #include <systemlib/err.h>
 #include <systemlib/conversions.h>
 
@@ -249,26 +249,23 @@ usage()
 int
 test_ppm_main(int argc, char *argv[])
 {
-	if (argc < 2) {
-		test_ppm::usage();
-		return -1;
-	}
-
 	const char *verb = argv[1];
 	unsigned  channels = 7;
 
 	/*
 	 * Start/load the driver.
+
 	 */
+
 	if (!strcmp(verb, "start")) {
 		test_ppm::start(channels);
-		return 0;
+		exit(0);
 	}
 
 	if (!strcmp(verb, "stop")) {
 
 		test_ppm::stop();
-		return 0;
+		exit(0);
 	}
 
 	/*
@@ -283,9 +280,11 @@ test_ppm_main(int argc, char *argv[])
 		unsigned value	= strtol(argv[3], NULL, 0);
 
 		test_ppm::set(channel, value);
-		return 0;
+		exit(0);
 	}
 
+
+
 	test_ppm::usage();
-	return -1;
+	exit(1);
 }

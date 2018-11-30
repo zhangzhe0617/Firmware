@@ -38,13 +38,12 @@
  * @author Julian Oes <julian@oes.ch>
  */
 
-#pragma once
+#ifndef NAVIGATOR_MISSION_BLOCK_H
+#define NAVIGATOR_MISSION_BLOCK_H
 
 #include "navigator_mode.h"
-#include "navigation.h"
 
-#include <drivers/drv_hrt.h>
-#include <systemlib/mavlink_log.h>
+#include <navigator/navigation.h>
 #include <uORB/topics/mission.h>
 #include <uORB/topics/position_setpoint_triplet.h>
 #include <uORB/topics/vehicle_command.h>
@@ -59,8 +58,8 @@ public:
 	/**
 	 * Constructor
 	 */
-	MissionBlock(Navigator *navigator);
-	virtual ~MissionBlock() = default;
+	MissionBlock(Navigator *navigator, const char *name);
+	~MissionBlock() = default;
 
 	MissionBlock(const MissionBlock &) = delete;
 	MissionBlock &operator=(const MissionBlock &) = delete;
@@ -88,6 +87,11 @@ protected:
 	bool mission_item_to_position_setpoint(const mission_item_s &item, position_setpoint_s *sp);
 
 	/**
+	 * Set previous position setpoint to current setpoint
+	 */
+	void set_previous_pos_setpoint();
+
+	/**
 	 * Set a loiter mission item, if possible reuse the position setpoint, otherwise take the current position
 	 */
 	void set_loiter_item(struct mission_item_s *item, float min_clearance = -1.0f);
@@ -102,15 +106,12 @@ protected:
 	 */
 	void set_land_item(struct mission_item_s *item, bool at_current_location);
 
+	void set_current_position_item(struct mission_item_s *item);
+
 	/**
 	 * Set idle mission item
 	 */
 	void set_idle_item(struct mission_item_s *item);
-
-	/**
-	 * Set vtol transition item
-	 */
-	void set_vtol_transition_item(struct mission_item_s *item, const uint8_t new_mode);
 
 	/**
 	 * General function used to adjust the mission item based on vehicle specific limitations
@@ -120,8 +121,6 @@ protected:
 	void issue_command(const mission_item_s &item);
 
 	float get_time_inside(const struct mission_item_s &item);
-
-	float get_absolute_altitude_for_item(struct mission_item_s &mission_item) const;
 
 	mission_item_s _mission_item{};
 
@@ -133,4 +132,13 @@ protected:
 	hrt_abstime _time_wp_reached{0};
 
 	orb_advert_t    _actuator_pub{nullptr};
+
+	control::BlockParamFloat _param_yaw_timeout;
+	control::BlockParamFloat _param_yaw_err;
+
+	// VTOL parameters
+	control::BlockParamFloat _param_back_trans_dec_mss;
+	control::BlockParamFloat _param_reverse_delay;
 };
+
+#endif

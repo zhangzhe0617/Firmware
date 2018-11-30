@@ -30,20 +30,21 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 ############################################################################
-
-px4_add_library(controllib
-	block/Block.cpp
-	block/BlockParam.cpp
-	BlockDerivative.cpp
-	BlockHighPass.cpp
-	BlockIntegral.cpp
-	BlockIntegralTrap.cpp
-	BlockLimit.cpp
-	BlockLimitSym.cpp
-	BlockLowPass.cpp
-	BlockLowPass2.cpp
-)
-
-if(PX4_TESTING)
-	add_subdirectory(controllib_test)
-endif()
+px4_add_module(
+	MODULE lib__controllib
+	COMPILE_FLAGS
+	SRCS
+		block/Block.cpp
+		block/BlockParam.cpp
+		BlockDerivative.cpp
+		BlockHighPass.cpp
+		BlockIntegral.cpp
+		BlockIntegralTrap.cpp
+		BlockLimit.cpp
+		BlockLimitSym.cpp
+		BlockLowPass.cpp
+		BlockLowPass2.cpp
+	DEPENDS
+		platforms__common
+	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

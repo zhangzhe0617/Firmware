@@ -34,6 +34,7 @@ px4_add_module(
 	MODULE drivers__vmount
 	MAIN vmount
 	COMPILE_FLAGS
+		-Wno-sign-compare # TODO: fix all sign-compare
 	STACK_MAIN 1024
 	SRCS
 		input.cpp
@@ -45,7 +46,6 @@ px4_add_module(
 		output_rc.cpp
 		vmount.cpp
 	DEPENDS
-		git_ecl
-		ecl_geo
+		platforms__common
 	)
- 
+ # vim: set noet ft=cmake fenc=utf-8 ff=unix :

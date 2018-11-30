@@ -45,7 +45,6 @@
 			test_class* test = new test_class();		\
 			bool success = test->run_tests();			\
 			test->print_results();						\
-			delete test;                                              \
 			return success ? 0 : -1;					\
 		}												\
 	}
@@ -106,7 +105,6 @@ protected:
 			_tests_passed++;			\
 		}						\
 		_cleanup();					\
-		printf("\n");				\
 	} while (0)
 
 /// @brief Used to assert a value within a unit test.
@@ -163,7 +161,7 @@ protected:
 /// since it will give you better error reporting of the actual values being compared.
 #define ut_compare_float(message, v1, v2, precision)						\
 	do {											\
-		int _p = powf(10.0f, precision);						\
+		int _p = pow(10.0f, precision);							\
 		int _v1 = (int)(v1 * _p + 0.5f);						\
 		int _v2 = (int)(v2 * _p + 0.5f);						\
 		if (_v1 != _v2) {								\

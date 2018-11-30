@@ -43,7 +43,7 @@
 
 #include <containers/List.hpp>
 #include <px4_defines.h>
-#include <parameters/param.h>
+#include <systemlib/param/param.h>
 
 namespace control
 {
@@ -63,7 +63,7 @@ public:
 	virtual ~BlockParamBase() = default;
 
 	virtual bool update() = 0;
-	const char *getName() const { return param_name(_handle); }
+	const char *getName() { return param_name(_handle); }
 
 protected:
 	param_t _handle{PARAM_INVALID};
@@ -101,12 +101,8 @@ protected:
 	T _val;
 };
 
-template <>
-bool BlockParam<bool>::update();
-
 typedef BlockParam<float> BlockParamFloat;
 typedef BlockParam<int32_t> BlockParamInt;
-typedef BlockParam<bool> BlockParamBool;
 typedef BlockParam<float &> BlockParamExtFloat;
 typedef BlockParam<int32_t &> BlockParamExtInt;
 

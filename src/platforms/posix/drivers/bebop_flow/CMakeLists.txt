@@ -41,7 +41,8 @@ px4_add_module(
 		video_device.cpp
 		dump_pgm.cpp
 	DEPENDS
-		git_driverframework
+		platforms__common
 		df_driver_framework
 		df_mt9v117
 	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

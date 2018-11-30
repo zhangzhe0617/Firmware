@@ -110,7 +110,7 @@ static int genfault(int fault)
 		k =  1 / fault;
 
 		/* This is not going to happen
-		 * Disable divide by 0 fault generation
+		 * Enable divide by 0 fault generation
 		 */
 
 		*pCCR &= ~0x10;

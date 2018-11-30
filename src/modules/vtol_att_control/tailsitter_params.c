@@ -39,6 +39,8 @@
  * @author David Vorsin     <davidvorsin@gmail.com>
  */
 
+#include <systemlib/param/param.h>
+
 /**
  * Duration of front transition phase 2
  *

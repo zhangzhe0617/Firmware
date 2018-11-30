@@ -39,14 +39,24 @@
  * @author Anton Babushkin <anton.babushkin@me.com>
  */
 
-#pragma once
+#ifndef NAVIGATOR_MODE_H
+#define NAVIGATOR_MODE_H
+
+#include <drivers/drv_hrt.h>
+
+#include <controllib/blocks.hpp>
+#include <controllib/block/BlockParam.hpp>
+
+#include <dataman/dataman.h>
+
+#include <uORB/topics/position_setpoint_triplet.h>
 
 class Navigator;
 
-class NavigatorMode
+class NavigatorMode : public control::SuperBlock
 {
 public:
-	NavigatorMode(Navigator *navigator);
+	NavigatorMode(Navigator *navigator, const char *name);
 	virtual ~NavigatorMode() = default;
 	NavigatorMode(const NavigatorMode &) = delete;
 	NavigatorMode operator=(const NavigatorMode &) = delete;
@@ -79,3 +89,5 @@ protected:
 private:
 	bool _active{false};
 };
+
+#endif

@@ -49,23 +49,17 @@ class MavlinkStream
 {
 
 public:
-	MavlinkStream *next{nullptr};
+	MavlinkStream *next;
 
 	MavlinkStream(Mavlink *mavlink);
-	virtual ~MavlinkStream() = default;
-
-	// no copy, assignment, move, move assignment
-	MavlinkStream(const MavlinkStream &) = delete;
-	MavlinkStream &operator=(const MavlinkStream &) = delete;
-	MavlinkStream(MavlinkStream &&) = delete;
-	MavlinkStream &operator=(MavlinkStream &&) = delete;
+	virtual ~MavlinkStream();
 
 	/**
 	 * Get the interval
 	 *
-	 * @param interval the interval in microseconds (us) between messages
+	 * @param interval the inveral in microseconds (us) between messages
 	 */
-	void set_interval(const int interval) { _interval = interval; }
+	void set_interval(const int interval);
 
 	/**
 	 * Get the interval
@@ -77,7 +71,7 @@ public:
 	/**
 	 * @return 0 if updated / sent, -1 if unchanged
 	 */
-	int update(const hrt_abstime &t);
+	int update(const hrt_abstime t);
 	virtual const char *get_name() const = 0;
 	virtual uint16_t get_id() = 0;
 
@@ -101,34 +95,20 @@ public:
 	 */
 	virtual unsigned get_size_avg() { return get_size(); }
 
-	/**
-	 * @return true if the first message of this stream has been sent
-	 */
-	bool first_message_sent() const { return _first_message_sent; }
-
-	/**
-	 * Reset the time of last sent to 0. Can be used if a message over this
-	 * stream needs to be sent immediately.
-	 */
-	void reset_last_sent() { _last_sent = 0; }
-
 protected:
-	Mavlink      *const _mavlink;
-	int _interval{1000000};		///< if set to negative value = unlimited rate
+	Mavlink     *_mavlink;
+	int _interval;		///< if set to negative value = unlimited rate
 
+#ifndef __PX4_QURT
 	virtual bool send(const hrt_abstime t) = 0;
-
-	/**
-	 * Function to collect/update data for the streams at a high rate independant of
-	 * actual stream rate.
-	 *
-	 * This function is called at every iteration of the mavlink module.
-	 */
-	virtual void update_data() { }
+#endif
 
 private:
-	hrt_abstime _last_sent{0};
-	bool _first_message_sent{false};
+	hrt_abstime _last_sent;
+
+	/* do not allow top copying this class */
+	MavlinkStream(const MavlinkStream &);
+	MavlinkStream &operator=(const MavlinkStream &);
 };
 
 

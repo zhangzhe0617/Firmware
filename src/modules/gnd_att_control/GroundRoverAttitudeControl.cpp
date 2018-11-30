@@ -174,11 +174,10 @@ GroundRoverAttitudeControl::battery_status_poll()
 	}
 }
 
-int
+void
 GroundRoverAttitudeControl::task_main_trampoline(int argc, char *argv[])
 {
 	att_gnd_control::g_control->task_main();
-	return 0;
 }
 
 void
@@ -303,7 +302,7 @@ GroundRoverAttitudeControl::task_main()
 					}
 
 					/* throttle passed through if it is finite and if no engine failure was detected */
-					_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _att_sp.thrust_body[0];
+					_actuators.control[actuator_controls_s::INDEX_THROTTLE] = _att_sp.thrust;
 
 					/* scale effort by battery status */
 					if (_parameters.bat_scale_en && _battery_status.scale > 0.0f &&

@@ -39,7 +39,8 @@ px4_add_module(
 	SRCS
 		df_mpu6050_wrapper.cpp
 	DEPENDS
-		git_driverframework
+		platforms__common
 		df_driver_framework
 		df_mpu6050
 	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

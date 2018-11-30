@@ -49,7 +49,13 @@
 constexpr const char MavlinkFTP::_root_dir[];
 
 MavlinkFTP::MavlinkFTP(Mavlink *mavlink) :
-	_mavlink(mavlink)
+	_session_info{},
+	_utRcvMsgFunc{},
+	_worker_data{},
+	_mavlink(mavlink),
+	_work_buffer1{nullptr},
+	_work_buffer2{nullptr},
+	_last_work_buffer_access{0}
 {
 	// initialize session
 	_session_info.fd = -1;
@@ -64,6 +70,7 @@ MavlinkFTP::~MavlinkFTP()
 	if (_work_buffer2) {
 		delete[] _work_buffer2;
 	}
+
 }
 
 unsigned
@@ -663,7 +670,7 @@ MavlinkFTP::_workTruncateFile(PayloadHeader *payload)
 
 	// emulate truncate(_work_buffer1, payload->offset) by
 	// copying to temp and overwrite with O_TRUNC flag (NuttX does not support truncate()).
-	const char temp_file[] = PX4_STORAGEDIR"/.trunc.tmp";
+	const char temp_file[] = PX4_ROOTFSDIR"/fs/microsd/.trunc.tmp";
 
 	struct stat st;
 

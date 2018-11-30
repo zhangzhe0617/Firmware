@@ -38,11 +38,34 @@
  * @author Andreas Antener <andreas@uaventure.com>
  */
 
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <fcntl.h>
+
+#include <systemlib/err.h>
+#include <systemlib/mavlink_log.h>
+
+#include <uORB/uORB.h>
+#include <uORB/topics/position_setpoint_triplet.h>
+
 #include "land.h"
 #include "navigator.h"
 
-Land::Land(Navigator *navigator) :
-	MissionBlock(navigator)
+Land::Land(Navigator *navigator, const char *name) :
+	MissionBlock(navigator, name)
+{
+	/* load initial params */
+	updateParams();
+}
+
+Land::~Land()
+{
+}
+
+void
+Land::on_inactive()
 {
 }
 
@@ -80,7 +103,7 @@ Land::on_active()
 	}
 
 
-	if (_navigator->get_land_detected()->landed) {
+	if (is_mission_item_reached() && !_navigator->get_mission_result()->finished) {
 		_navigator->get_mission_result()->finished = true;
 		_navigator->set_mission_result_updated();
 		set_idle_item(&_mission_item);

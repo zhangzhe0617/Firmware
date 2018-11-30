@@ -36,14 +36,19 @@
 
 #include "drv_deck.h"
 
-#include <cstring>
-
 
 SyslinkMemory::SyslinkMemory(Syslink *link) :
-	CDev(DECK_DEVICE_PATH),
+	CDev("SyslinkMemory", DECK_DEVICE_PATH),
 	_link(link),
 	_activeI(0)
 {
+
+
+}
+
+SyslinkMemory::~SyslinkMemory()
+{
+
 }
 
 
@@ -54,7 +59,7 @@ SyslinkMemory::init()
 
 	/* if init failed, bail now */
 	if (ret != OK) {
-		PX4_DEBUG("CDev init failed");
+		DEVICE_DEBUG("CDev init failed");
 		return ret;
 	}
 

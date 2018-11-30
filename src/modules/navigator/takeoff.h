@@ -31,14 +31,18 @@
  *
  ****************************************************************************/
 /**
- * @file takeoff.h
+ * @file Takeoff.h
  *
  * Helper class to take off
  *
  * @author Lorenz Meier <lorenz@px4.io>
  */
 
-#pragma once
+#ifndef NAVIGATOR_TAKEOFF_H
+#define NAVIGATOR_TAKEOFF_H
+
+#include <controllib/blocks.hpp>
+#include <controllib/block/BlockParam.hpp>
 
 #include "navigator_mode.h"
 #include "mission_block.h"
@@ -46,13 +50,20 @@
 class Takeoff : public MissionBlock
 {
 public:
-	Takeoff(Navigator *navigator);
-	~Takeoff() = default;
+	Takeoff(Navigator *navigator, const char *name);
 
-	void on_activation() override;
-	void on_active() override;
+	~Takeoff();
+
+	virtual void on_inactive();
+
+	virtual void on_activation();
+
+	virtual void on_active();
 
 private:
+	control::BlockParamFloat _param_min_alt;
 
 	void set_takeoff_position();
 };
+
+#endif

@@ -44,7 +44,7 @@
 #include <px4_config.h>
 #include <px4_tasks.h>
 #include <drivers/device/i2c.h>
-#include <parameters/param.h>
+#include <systemlib/param/param.h>
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -71,6 +71,7 @@
 #include <drivers/drv_mixer.h>
 #include <drivers/drv_tone_alarm.h>
 
+#include <systemlib/systemlib.h>
 #include <systemlib/err.h>
 #include <lib/mixer/mixer.h>
 
@@ -78,7 +79,6 @@
 #include <uORB/topics/actuator_outputs.h>
 #include <uORB/topics/actuator_armed.h>
 #include <uORB/topics/esc_status.h>
-#include <uORB/topics/tune_control.h>
 
 #include <systemlib/err.h>
 
@@ -161,7 +161,6 @@ private:
 	char					_device[20];
 	orb_advert_t			_t_outputs;
 	orb_advert_t			_t_esc_status;
-	orb_advert_t			_tune_control_sub;
 	unsigned int			_num_outputs;
 	bool					_primary_pwm_device;
 	bool     				_motortest;
@@ -448,14 +447,14 @@ MK::scaling(float val, float inMin, float inMax, float outMin, float outMax)
 void
 MK::play_beep(int count)
 {
-	tune_control_s tune = {};
-	tune.tune_id = static_cast<int>(TuneID::SINGLE_BEEP);
+	int buzzer = ::open(TONEALARM0_DEVICE_PATH, O_WRONLY);
 
 	for (int i = 0; i < count; i++) {
-		orb_publish(ORB_ID(tune_control), _tune_control_sub, &tune);
+		::ioctl(buzzer, TONE_SET_ALARM, TONE_SINGLE_BEEP_TUNE);
 		usleep(300000);
 	}
 
+	::close(buzzer);
 }
 
 void
@@ -491,11 +490,6 @@ MK::task_main()
 	memset(&esc, 0, sizeof(esc));
 	_t_esc_status = orb_advertise(ORB_ID(esc_status), &esc);
 
-	/*
-	 * advertise the tune_control.
-	 */
-	tune_control_s tune = {};
-	_tune_control_sub = orb_advertise(ORB_ID(tune_control), &tune);
 
 	pollfd fds[2];
 	fds[0].fd = _t_actuators;

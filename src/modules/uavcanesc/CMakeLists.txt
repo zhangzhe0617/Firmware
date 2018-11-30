@@ -36,7 +36,7 @@ px4_add_git_submodule(TARGET git_uavcan PATH "../uavcan/libuavcan")
 set(UAVCAN_USE_CPP03 ON CACHE BOOL "uavcan cpp03")
 set(UAVCAN_PLATFORM stm32 CACHE STRING "uavcan platform")
 
-string(TOUPPER "${PX4_PLATFORM}" OS_UPPER)
+string(TOUPPER "${OS}" OS_UPPER)
 add_definitions(
 		-DUAVCAN_CPP_VERSION=UAVCAN_CPP03
 		-DUAVCAN_MAX_NETWORK_SIZE_HINT=16
@@ -53,7 +53,7 @@ add_definitions(
 set(LIBUAVCAN_DIR ${PX4_SOURCE_DIR}/src/modules/uavcan/libuavcan)
 
 add_subdirectory(${LIBUAVCAN_DIR} uavcanesc_libuavcan)
-add_dependencies(uavcan prebuild_targets)
+add_dependencies(uavcan platforms__nuttx)
 
 include_directories(${PX4_SOURCE_DIR}/src/modules/systemlib/flashparams)
 include_directories(${LIBUAVCAN_DIR}/libuavcan/include)
@@ -71,18 +71,17 @@ px4_add_module(
 	COMPILE_FLAGS
 		-Wno-deprecated-declarations
 		-O3
+		-Wno-sign-compare
 	SRCS
 		uavcanesc_main.cpp
 		indication_controller.cpp
 		led.cpp
 		uavcanesc_params.c
+		${PX4_SOURCE_DIR}/src/modules/systemlib/flashparams/flashparams.c
+		${PX4_SOURCE_DIR}/src/modules/systemlib/flashparams/flashfs.c
 	DEPENDS
-		drivers_bootloaders
-		git_uavcan
-		version
-
-		# within libuavcan
-		libuavcan_dsdlc
+		platforms__common
 		uavcan
-		uavcan_stm32_driver
 	)
+
+target_link_libraries(modules__uavcanesc uavcan uavcan_stm32_driver)

@@ -31,4 +31,11 @@
 #
 ############################################################################
 
-add_subdirectory(common)
+if (BOARD)
+	add_subdirectory(common)
+	add_subdirectory(${BOARD})
+else()
+	message(FATAL_ERROR "BOARD not defined")
+endif()
+
+

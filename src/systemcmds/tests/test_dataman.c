@@ -50,6 +50,7 @@
 #include <arch/board/board.h>
 
 #include <drivers/drv_board_led.h>
+#include <systemlib/systemlib.h>
 #include <drivers/drv_hrt.h>
 #include <semaphore.h>
 
@@ -143,7 +144,7 @@ task_main(int argc, char *argv[])
 	}
 
 	hrt_abstime rend = hrt_absolute_time();
-	PX4_INFO("task %d pass, hit %d, miss %d, io time read %" PRIu64 "ms. write %" PRIu64 "ms.",
+	PX4_INFO("task %d pass, hit %d, miss %d, io time read %llums. write %llums.",
 		 my_id, hit, miss, (rend - rstart) / NUM_MISSIONS_TEST / 1000, (wend - wstart) / NUM_MISSIONS_TEST / 1000);
 	px4_sem_post(sems + my_id);
 	return 0;

@@ -61,15 +61,12 @@
 #include <uORB/topics/wind_estimate.h>
 #include <uORB/topics/parameter_update.h>
 #include <uORB/topics/vehicle_global_position.h>
-#include <parameters/param.h>
+#include <systemlib/param/param.h>
 #include <systemlib/err.h>
 #include <systemlib/mavlink_log.h>
-#include <lib/ecl/geo/geo.h>
+#include <geo/geo.h>
 #include <dataman/dataman.h>
 #include <mathlib/mathlib.h>
-#include <matrix/math.hpp>
-
-using matrix::wrap_pi;
 
 
 /**
@@ -161,7 +158,7 @@ private:
 	/**
 	 * Shim for calling task_main from task_create.
 	 */
-	static int	task_main_trampoline(int argc, char *argv[]);
+	static void	task_main_trampoline(int argc, char *argv[]);
 };
 
 namespace bottle_drop
@@ -191,7 +188,6 @@ BottleDrop::BottleDrop() :
 	_onboard_mission {},
 	_onboard_mission_pub(nullptr)
 {
-	_onboard_mission.dataman_id = DM_KEY_WAYPOINTS_ONBOARD;
 }
 
 BottleDrop::~BottleDrop()
@@ -529,7 +525,7 @@ BottleDrop::task_main()
 				float approach_direction = get_bearing_to_next_waypoint(flight_vector_s.lat, flight_vector_s.lon, flight_vector_e.lat,
 							   flight_vector_e.lon);
 
-				approach_error = wrap_pi(ground_direction - approach_direction);
+				approach_error = _wrap_pi(ground_direction - approach_direction);
 
 				if (counter % 90 == 0) {
 					mavlink_log_info(&_mavlink_log_pub, "drop distance %u, heading error %u", (unsigned)distance_real,
@@ -625,20 +621,19 @@ BottleDrop::task_main()
 						warnx("ERROR: could not save onboard WP");
 					}
 
-					_onboard_mission.timestamp = hrt_absolute_time();
 					_onboard_mission.count = 2;
 					_onboard_mission.current_seq = 0;
 
 					if (_onboard_mission_pub != nullptr) {
-						orb_publish(ORB_ID(mission), _onboard_mission_pub, &_onboard_mission);
+						orb_publish(ORB_ID(onboard_mission), _onboard_mission_pub, &_onboard_mission);
 
 					} else {
-						_onboard_mission_pub = orb_advertise(ORB_ID(mission), &_onboard_mission);
+						_onboard_mission_pub = orb_advertise(ORB_ID(onboard_mission), &_onboard_mission);
 					}
 
 					float approach_direction = get_bearing_to_next_waypoint(flight_vector_s.lat, flight_vector_s.lon, flight_vector_e.lat,
 								   flight_vector_e.lon);
-					mavlink_log_critical(&_mavlink_log_pub, "position set, approach heading: %u",
+					mavlink_log_critical(&_mavlink_log_pub, "position set, approach heading: %u", (unsigned)distance_real,
 							     (unsigned)math::degrees(approach_direction + M_PI_F));
 
 					_drop_state = DROP_STATE_TARGET_SET;
@@ -650,9 +645,8 @@ BottleDrop::task_main()
 							     flight_vector_e.lon);
 
 					if (distance_wp2 < distance_real) {
-						_onboard_mission.timestamp = hrt_absolute_time();
 						_onboard_mission.current_seq = 0;
-						orb_publish(ORB_ID(mission), _onboard_mission_pub, &_onboard_mission);
+						orb_publish(ORB_ID(onboard_mission), _onboard_mission_pub, &_onboard_mission);
 
 					} else {
 
@@ -689,9 +683,8 @@ BottleDrop::task_main()
 									     flight_vector_e.lon);
 
 							if (distance_wp2 < distance_real) {
-								_onboard_mission.timestamp = hrt_absolute_time();
 								_onboard_mission.current_seq = 0;
-								orb_publish(ORB_ID(mission), _onboard_mission_pub, &_onboard_mission);
+								orb_publish(ORB_ID(onboard_mission), _onboard_mission_pub, &_onboard_mission);
 							}
 						}
 					}
@@ -709,11 +702,9 @@ BottleDrop::task_main()
 					mavlink_log_info(&_mavlink_log_pub, "#audio: closing bay");
 
 					// remove onboard mission
-					_onboard_mission.timestamp = hrt_absolute_time();
-					_onboard_mission.dataman_id = DM_KEY_WAYPOINTS_ONBOARD;
 					_onboard_mission.current_seq = -1;
 					_onboard_mission.count = 0;
-					orb_publish(ORB_ID(mission), _onboard_mission_pub, &_onboard_mission);
+					orb_publish(ORB_ID(onboard_mission), _onboard_mission_pub, &_onboard_mission);
 				}
 
 				break;
@@ -813,8 +804,7 @@ BottleDrop::handle_command(struct vehicle_command_s *cmd)
 			_onboard_mission.current_seq = -1;
 
 			if (_onboard_mission_pub != nullptr) {
-				_onboard_mission.timestamp = hrt_absolute_time();
-				orb_publish(ORB_ID(mission), _onboard_mission_pub, &_onboard_mission);
+				orb_publish(ORB_ID(onboard_mission), _onboard_mission_pub, &_onboard_mission);
 			}
 
 		} else {
@@ -871,11 +861,10 @@ BottleDrop::answer_command(struct vehicle_command_s *cmd, unsigned result)
 	}
 }
 
-int
+void
 BottleDrop::task_main_trampoline(int argc, char *argv[])
 {
 	bottle_drop::g_bottle_drop->task_main();
-	return 0;
 }
 
 static void usage()

@@ -51,6 +51,7 @@
 
 #include <arch/board/board.h>
 
+#include "systemlib/systemlib.h"
 #include <nuttx/progmem.h>
 
 
@@ -166,7 +167,7 @@ bl_update_main(int argc, char *argv[])
 
 	if (size != BL_FILE_SIZE_LIMIT)
 	{
-		PX4_ERR("erase error at %p", &base[size]);
+		PX4_ERR("erase error at 0x%08x", &base[size]);
 	}
 
 	PX4_INFO("flashing...");
@@ -177,7 +178,7 @@ bl_update_main(int argc, char *argv[])
 
 	if (size != s.st_size)
 	{
-		PX4_ERR("program error at %p",  &base[size]);
+		PX4_ERR("program error at 0x%0x8",  &base[size]);
 		goto flash_end;
 	}
 
@@ -191,7 +192,7 @@ bl_update_main(int argc, char *argv[])
 	for (int i = 0; i < s.st_size; i++)
 	{
 		if (base[i] != buf[i]) {
-			PX4_WARN("verify failed at %i - retry update, DO NOT reboot", i);
+			PX4_WARN("verify failed at %u - retry update, DO NOT reboot", i);
 			goto flash_end;
 		}
 	}
@@ -239,7 +240,7 @@ setopt(void)
 		return 0;
 	}
 
-	PX4_ERR("option bits setting failed; readback 0x%04" PRIx32, *optcr);
+	PX4_ERR("option bits setting failed; readback 0x%04x", *optcr);
 	return 1;
 }
 #endif // CONFIG_STM32_STM32F4XXX

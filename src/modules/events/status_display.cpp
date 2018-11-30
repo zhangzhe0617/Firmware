@@ -43,10 +43,7 @@
 #include "status_display.h"
 #include <drivers/drv_led.h>
 
-namespace events
-{
-namespace status
-{
+using namespace status;
 
 StatusDisplay::StatusDisplay(const events::SubscriberHandler &subscriber_handler)
 	: _subscriber_handler(subscriber_handler)
@@ -109,6 +106,3 @@ void StatusDisplay::publish()
 		_led_control_pub =  orb_advertise_queue(ORB_ID(led_control), &_led_control, LED_UORB_QUEUE_LENGTH);
 	}
 }
-
-} /* namespace status */
-} /* namespace events */

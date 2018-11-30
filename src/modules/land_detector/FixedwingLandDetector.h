@@ -42,14 +42,11 @@
 
 #pragma once
 
-#include <drivers/drv_hrt.h>
 #include <uORB/topics/airspeed.h>
 #include <uORB/topics/sensor_bias.h>
 #include <uORB/topics/vehicle_local_position.h>
 
 #include "LandDetector.h"
-
-using namespace time_literals;
 
 namespace land_detector
 {
@@ -70,21 +67,21 @@ protected:
 private:
 
 	/** Time in us that landing conditions have to hold before triggering a land. */
-	static constexpr hrt_abstime LANDED_TRIGGER_TIME_US = 2_s;
-	static constexpr hrt_abstime FLYING_TRIGGER_TIME_US = 0_us;
+	static constexpr uint64_t LANDED_TRIGGER_TIME_US = 2000000;
+	static constexpr uint64_t FLYING_TRIGGER_TIME_US = 0;
 
 	struct {
 		param_t maxVelocity;
 		param_t maxClimbRate;
 		param_t maxAirSpeed;
-		param_t maxXYAccel;
+		param_t maxIntVelocity;
 	} _paramHandle{};
 
 	struct {
 		float maxVelocity;
 		float maxClimbRate;
 		float maxAirSpeed;
-		float maxXYAccel;
+		float maxIntVelocity;
 	} _params{};
 
 	int _airspeedSub{-1};

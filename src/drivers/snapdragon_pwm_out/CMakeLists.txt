@@ -37,6 +37,6 @@ px4_add_module(
 	SRCS
 		snapdragon_pwm_out.cpp
 	DEPENDS
-		mixer
-		pwm_limit
+		platforms__common
 	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

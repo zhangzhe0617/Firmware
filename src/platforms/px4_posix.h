@@ -55,10 +55,11 @@
 
 #include "px4_sem.h"
 
-#define  PX4_F_RDONLY 1
-#define  PX4_F_WRONLY 2
 
 #ifdef __PX4_NUTTX
+
+#define  PX4_F_RDONLY 1
+#define  PX4_F_WRONLY 2
 
 typedef struct pollfd px4_pollfd_struct_t;
 
@@ -81,6 +82,9 @@ typedef struct pollfd px4_pollfd_struct_t;
 
 #elif defined(__PX4_POSIX)
 
+#define  PX4_F_RDONLY O_RDONLY
+#define  PX4_F_WRONLY O_WRONLY
+#define  PX4_F_CREAT  O_CREAT
 #define	 PX4_STACK_OVERHEAD	8192
 
 __BEGIN_DECLS

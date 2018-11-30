@@ -62,8 +62,7 @@ enum PX4_CUSTOM_SUB_MODE_AUTO {
 	PX4_CUSTOM_SUB_MODE_AUTO_RTL,
 	PX4_CUSTOM_SUB_MODE_AUTO_LAND,
 	PX4_CUSTOM_SUB_MODE_AUTO_RTGS,
-	PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET,
-	PX4_CUSTOM_SUB_MODE_AUTO_PRECLAND
+	PX4_CUSTOM_SUB_MODE_AUTO_FOLLOW_TARGET
 };
 
 union px4_custom_mode {
@@ -74,10 +73,6 @@ union px4_custom_mode {
 	};
 	uint32_t data;
 	float data_float;
-	struct {
-		uint16_t reserved_hl;
-		uint16_t custom_mode_hl;
-	};
 };
 
 #endif /* PX4_CUSTOM_MODE_H_ */

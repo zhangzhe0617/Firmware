@@ -30,7 +30,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 ############################################################################
-
 px4_add_module(
 	MODULE lib__rc__rc_tests
 	MAIN rc_tests
@@ -39,5 +38,7 @@ px4_add_module(
 	SRCS
 		RCTest.cpp
 	DEPENDS
-		rc
+		platforms__common
 	)
+
+# vim: set noet ft=cmake fenc=utf-8 ff=unix : 

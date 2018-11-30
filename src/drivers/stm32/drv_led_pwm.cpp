@@ -52,8 +52,9 @@
 #include <ctype.h>
 
 
-#include <perf/perf_counter.h>
+#include <systemlib/perf_counter.h>
 #include <systemlib/err.h>
+#include <systemlib/systemlib.h>
 #include <systemlib/px4_macros.h>
 
 #include <drivers/drv_pwm_output.h>

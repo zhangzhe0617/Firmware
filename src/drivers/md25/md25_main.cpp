@@ -51,7 +51,8 @@
 #include <string.h>
 #include <math.h>
 
-#include <parameters/param.h>
+#include <systemlib/systemlib.h>
+#include <systemlib/param/param.h>
 
 #include <arch/board/board.h>
 #include "md25.hpp"

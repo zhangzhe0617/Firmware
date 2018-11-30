@@ -37,6 +37,6 @@ px4_add_module(
 	SRCS
 		spektrum_rc.cpp
 	DEPENDS
-		rc
+		platforms__common
 	)
-
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

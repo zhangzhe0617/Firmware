@@ -42,15 +42,10 @@ px4_add_module(
 		Publication.cpp
 		Subscription.cpp
 		uORB.cpp
-		uORBDeviceMaster.cpp
-		uORBDeviceNode.cpp
+		uORBDevices.cpp
 		uORBMain.cpp
 		uORBManager.cpp
 		uORBUtils.cpp
 	DEPENDS
-		uorb_msgs
+		platforms__common
 	)
-
-if(PX4_TESTING)
-	add_subdirectory(uORB_tests)
-endif()

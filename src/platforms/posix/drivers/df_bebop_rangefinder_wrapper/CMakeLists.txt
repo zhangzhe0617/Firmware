@@ -39,7 +39,8 @@ px4_add_module(
 	SRCS
 		df_bebop_rangefinder_wrapper.cpp
 	DEPENDS
-		git_driverframework
+		platforms__common
 		df_driver_framework
 		df_bebop_rangefinder
 	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

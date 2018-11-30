@@ -38,7 +38,6 @@ px4_add_module(
 	SRCS
 		fmu.cpp
 	DEPENDS
-		circuit_breaker
-		mixer
-		pwm_limit
+		platforms__common
 	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

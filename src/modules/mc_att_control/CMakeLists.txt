@@ -30,7 +30,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 ############################################################################
-
 px4_add_module(
 	MODULE modules__mc_att_control
 	MAIN mc_att_control
@@ -40,7 +39,6 @@ px4_add_module(
 	SRCS
 		mc_att_control_main.cpp
 	DEPENDS
-		circuit_breaker
-		conversion
-		mathlib
+		platforms__common
 	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

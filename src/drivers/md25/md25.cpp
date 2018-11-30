@@ -121,6 +121,10 @@ MD25::MD25(const char *deviceName, int bus,
 	setTimeout(true);
 }
 
+MD25::~MD25()
+{
+}
+
 int MD25::readData()
 {
 	uint8_t sendBuf[1];

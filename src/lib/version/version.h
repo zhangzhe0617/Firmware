@@ -47,6 +47,15 @@
 #include <systemlib/px4_macros.h>
 #include <stdint.h>
 
+/* The preferred method for publishing a board name is to
+ * define it in board_config.h as BOARD_NAME
+ */
+
+#ifndef BOARD_NAME
+#  error "board_config.h must define BOARD_NAME"
+#endif
+
+
 __BEGIN_DECLS
 
 /**
@@ -54,7 +63,7 @@ __BEGIN_DECLS
  */
 static inline const char *px4_board_name(void)
 {
-	return PX4_BOARD_NAME;
+	return BOARD_NAME;
 }
 
 /**
@@ -84,7 +93,10 @@ static inline int px4_board_hw_revision(void)
 /**
  * get the build URI (used for crash logging)
  */
-const char *px4_build_uri(void);
+static inline const char *px4_build_uri(void)
+{
+	return STRINGIFY(BUILD_URI);
+}
 
 /**
  * Convert a version tag string to a number
@@ -165,15 +177,11 @@ __EXPORT const char *px4_firmware_version_string(void);
  */
 __EXPORT const char *px4_firmware_git_branch(void);
 
+
 /**
  * Firmware version in binary form (first part of the git tag)
  */
 __EXPORT uint64_t px4_firmware_version_binary(void);
-
-/**
- * ECL lib version as human readable string (git tag)
- */
-__EXPORT const char *px4_ecl_lib_version_string(void);
 
 /**
  * MAVLink lib version in binary form (first part of the git tag)

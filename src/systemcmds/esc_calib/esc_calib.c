@@ -55,6 +55,7 @@
 
 #include <arch/board/board.h>
 
+#include "systemlib/systemlib.h"
 #include "drivers/drv_pwm_output.h"
 
 #include <uORB/topics/actuator_controls.h>

@@ -93,6 +93,8 @@ int
 CameraFeedback::start()
 {
 
+	ASSERT(_main_task == -1);
+
 	/* start the task */
 	_main_task = px4_task_spawn_cmd("camera_feedback",
 					SCHED_DEFAULT,
@@ -220,19 +222,15 @@ CameraFeedback::task_main()
 
 	}
 
-	orb_unsubscribe(_trigger_sub);
-	orb_unsubscribe(_gpos_sub);
-	orb_unsubscribe(_att_sub);
-
+	PX4_INFO("Exiting.");
 	_main_task = -1;
 
 }
 
-int
+void
 CameraFeedback::task_main_trampoline(int argc, char *argv[])
 {
 	camera_feedback::g_camera_feedback->task_main();
-	return 0;
 }
 
 static int usage()

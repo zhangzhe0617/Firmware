@@ -38,5 +38,6 @@ px4_add_module(
 		qshell_start_posix.cpp
 		qshell.cpp
 	DEPENDS
+		platforms__common
 	)
-
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

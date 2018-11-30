@@ -46,7 +46,6 @@
 #include <uORB/uORB.h>
 #include <uORB/topics/actuator_controls.h>
 #include <uORB/topics/manual_control_setpoint.h>
-#include <uORB/topics/input_rc.h>
 
 using namespace sensors;
 
@@ -257,7 +256,7 @@ RCUpdate::rc_poll(const ParameterHandles &parameter_handles)
 
 	if (rc_updated) {
 		/* read low-level values from FMU or IO RC inputs (PPM, Spektrum, S.Bus) */
-		struct input_rc_s rc_input;
+		struct rc_input_values rc_input;
 
 		orb_copy(ORB_ID(input_rc), _rc_sub, &rc_input);
 

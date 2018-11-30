@@ -31,14 +31,13 @@
 #
 ############################################################################
 
-# common board drivers (currently only for nuttx fmu boards)
-if ((${PX4_PLATFORM} MATCHES "nuttx") AND NOT ${PX4_BOARD} MATCHES "io")
-
-	px4_add_library(drivers_boards_common
+if (${OS} MATCHES "nuttx")
+	px4_add_library(boards_common
 		board_crashdump.c
 		board_dma_alloc.c
 		board_gpio_init.c
 		)
+	add_dependencies(boards_common nuttx_build)
 
 	if (${CONFIG_ARCH_CHIP} MATCHES "kinetis")
 		add_subdirectory(kinetis)
@@ -47,16 +46,4 @@ if ((${PX4_PLATFORM} MATCHES "nuttx") AND NOT ${PX4_BOARD} MATCHES "io")
 	elseif (${CONFIG_ARCH_CHIP} MATCHES "stm32")
 		add_subdirectory(stm32)
 	endif()
-
-	target_link_libraries(drivers_boards_common
-		PRIVATE
-			drivers_boards_common_arch
-			nuttx_arch # bbsram
-			nuttx_mm # dma gran alloc
-			systemlib
-		)
-
-else()
-	add_library(drivers_boards_common INTERFACE)
-	add_library(drivers_boards_common_arch INTERFACE)
 endif()

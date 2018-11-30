@@ -1,18 +1,17 @@
-#!nsh
 #
-# PX4IO interface init script.
+# Init PX4IO interface
 #
-if [ $USE_IO = yes -a $IO_PRESENT = yes ]
+
+#
+# Allow PX4IO to recover from midair restarts.
+#
+px4io recovery
+
+#
+# Adjust PX4IO update rate limit
+#
+set PX4IO_LIMIT 400
+
+if px4io limit ${PX4IO_LIMIT}
 then
-	if px4io start
-	then
-		# Allow PX4IO to recover from midair restarts.
-		px4io recovery
-	
-		# Adjust PX4IO update rate limit.
-		px4io limit 400
-	else
-		echo "PX4IO start failed" >> $LOG_FILE
-		tune_control play -t 20
-	fi
 fi

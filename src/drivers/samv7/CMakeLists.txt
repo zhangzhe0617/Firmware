@@ -30,12 +30,16 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 ############################################################################
-
-add_library(drivers_arch
-	drv_hrt.c
-	drv_io_timer.c
-	drv_pwm_servo.c
-	drv_input_capture.c
-)
-add_dependencies(drivers_arch prebuild_targets)
-target_link_libraries(drivers_arch PRIVATE drivers_board)
+px4_add_module(
+	MODULE drivers__samv7
+	COMPILE_FLAGS
+		-Os
+	SRCS
+		drv_hrt.c
+		drv_io_timer.c
+		drv_pwm_servo.c
+		drv_input_capture.c
+	DEPENDS
+		platforms__common
+	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

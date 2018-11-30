@@ -56,6 +56,7 @@
 #include <drivers/drv_pwm_output.h>
 #include <platforms/px4_defines.h>
 
+#include "systemlib/systemlib.h"
 #include "systemlib/err.h"
 #include "uORB/topics/actuator_controls.h"
 
@@ -91,11 +92,11 @@ extern "C" __EXPORT int motor_ramp_main(int argc, char *argv[]);
  */
 int motor_ramp_thread_main(int argc, char *argv[]);
 
-bool min_pwm_valid(int pwm_value);
+bool min_pwm_valid(unsigned pwm_value);
 
-bool max_pwm_valid(int pwm_value);
+bool max_pwm_valid(unsigned pwm_value);
 
-int set_min_pwm(int fd, unsigned long max_channels, int pwm_value);
+int set_min_pwm(int fd, unsigned long max_channels, unsigned pwm_value);
 
 int set_out(int fd, unsigned long max_channels, float output);
 
@@ -212,17 +213,17 @@ int motor_ramp_main(int argc, char *argv[])
 	return 0;
 }
 
-bool min_pwm_valid(int pwm_value)
+bool min_pwm_valid(unsigned pwm_value)
 {
 	return pwm_value >= 900 && pwm_value <= 1500;
 }
 
-bool max_pwm_valid(int pwm_value)
+bool max_pwm_valid(unsigned pwm_value)
 {
 	return pwm_value <= 2100 && pwm_value > _min_pwm;
 }
 
-int set_min_pwm(int fd, unsigned long max_channels, int pwm_value)
+int set_min_pwm(int fd, unsigned long max_channels, unsigned pwm_value)
 {
 	int ret;
 
@@ -231,7 +232,7 @@ int set_min_pwm(int fd, unsigned long max_channels, int pwm_value)
 
 	pwm_values.channel_count = max_channels;
 
-	for (unsigned i = 0; i < max_channels; i++) {
+	for (int i = 0; i < max_channels; i++) {
 		pwm_values.values[i] = pwm_value;
 	}
 

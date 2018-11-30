@@ -30,13 +30,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 ############################################################################
-
 px4_add_module(
-	MODULE drivers__tone_alarm
+	MODULE drivers__samv7__tone_alarm
 	MAIN tone_alarm
+	COMPILE_FLAGS
+		-Os
 	SRCS
 		tone_alarm.cpp
 	DEPENDS
-		circuit_breaker
-		tunes
+		platforms__common
 	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

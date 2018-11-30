@@ -38,8 +38,6 @@
  * Flight time in microseconds = (LND_FLIGHT_T_HI << 32) | LND_FLIGHT_T_LO.
  *
  * @min 0
- * @volatile
- * @category system
  * @group Land Detector
  *
  */
@@ -52,8 +50,6 @@ PARAM_DEFINE_INT32(LND_FLIGHT_T_HI, 0);
  * Flight time in microseconds = (LND_FLIGHT_T_HI << 32) | LND_FLIGHT_T_LO.
  *
  * @min 0
- * @volatile
- * @category system
  * @group Land Detector
  *
  */

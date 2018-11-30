@@ -37,7 +37,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <unistd.h>
 
 #include <px4_config.h>
 #include <px4_workqueue.h>

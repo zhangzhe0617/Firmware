@@ -37,7 +37,13 @@
  * @author Thomas Gubler <thomasgubler@gmail.com>
  */
 
-#pragma once
+#ifndef NAVIGATOR_ENGINEFAILURE_H
+#define NAVIGATOR_ENGINEFAILURE_H
+
+#include <controllib/blocks.hpp>
+#include <controllib/block/BlockParam.hpp>
+
+#include <uORB/Subscription.hpp>
 
 #include "navigator_mode.h"
 #include "mission_block.h"
@@ -47,18 +53,21 @@ class Navigator;
 class EngineFailure : public MissionBlock
 {
 public:
-	EngineFailure(Navigator *navigator);
-	~EngineFailure() = default;
+	EngineFailure(Navigator *navigator, const char *name);
 
-	void on_inactive() override;
-	void on_activation() override;
-	void on_active() override;
+	~EngineFailure();
+
+	virtual void on_inactive();
+
+	virtual void on_activation();
+
+	virtual void on_active();
 
 private:
 	enum EFState {
 		EF_STATE_NONE = 0,
 		EF_STATE_LOITERDOWN = 1,
-	} _ef_state{EF_STATE_NONE};
+	} _ef_state;
 
 	/**
 	 * Set the DLL item
@@ -71,3 +80,4 @@ private:
 	void		advance_ef();
 
 };
+#endif

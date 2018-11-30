@@ -35,7 +35,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <sys/socket.h>
-#include <cstdlib>
 
 #include "microRTPS_transport.h"
 
@@ -194,11 +193,6 @@ ssize_t Transport_node::read(uint8_t *topic_ID, char out_buffer[], size_t buffer
 	return len;
 }
 
-ssize_t Transport_node::get_header_length()
-{
-    return sizeof(struct Header);
-}
-
 ssize_t Transport_node::write(const uint8_t topic_ID, char buffer[], size_t length)
 {
 	if (!fds_OK()) {
@@ -220,7 +214,7 @@ ssize_t Transport_node::write(const uint8_t topic_ID, char buffer[], size_t leng
 
 	// [>,>,>,topic_ID,seq,payload_length,CRCHigh,CRCLow,payload_start, ... ,payload_end]
 
-	uint16_t crc = crc16((uint8_t *)&buffer[sizeof(header)], length);
+	uint16_t crc = crc16((uint8_t *)buffer, length);
 
 	header.topic_ID = topic_ID;
 	header.seq = seq++;
@@ -229,13 +223,18 @@ ssize_t Transport_node::write(const uint8_t topic_ID, char buffer[], size_t leng
 	header.crc_h = (crc >> 8) & 0xff;
 	header.crc_l = crc & 0xff;
 
-	/* Headroom for header is created in client */
-	/*Fill in the header in the same payload buffer to call a single node_write */
-	memcpy(buffer, &header, sizeof(header));
-	ssize_t len = node_write(buffer, length + sizeof(header));
-	if (len != ssize_t(length + sizeof(header))) {
+	ssize_t len = node_write(&header, sizeof(header));
+
+	if (len != sizeof(header)) {
 		goto err;
 	}
+
+	len = node_write(buffer, length);
+
+	if (len != ssize_t(length)) {
+		goto err;
+	}
+
 	return len + sizeof(header);
 
 err:
@@ -289,18 +288,8 @@ int UART_node::init()
 		return -errno_bkp;
 	}
 
-        //Set up the UART for non-canonical binary communication: 8 bits, 1 stop bit, no parity,
-        //no flow control, no modem control
-        uart_config.c_iflag &= !(INPCK | ISTRIP | INLCR | IGNCR | ICRNL | IXON | IXANY | IXOFF);
-        uart_config.c_iflag |= IGNBRK | IGNPAR;
-
-        uart_config.c_oflag &= !(OPOST | ONLCR | OCRNL | ONOCR | ONLRET | OFILL | NLDLY | VTDLY);
-        uart_config.c_oflag |= NL0 | VT0;
-
-        uart_config.c_cflag &= !(CSIZE | CSTOPB | PARENB);
-        uart_config.c_cflag |= CS8 | CREAD | CLOCAL;
-
-        uart_config.c_lflag &= !(ISIG | ICANON | ECHO | TOSTOP | IEXTEN);
+	// Clear ONLCR flag (which appends a CR for every LF)
+	uart_config.c_oflag &= ~ONLCR;
 
 	// USB serial is indicated by /dev/ttyACM0
 	if (strcmp(uart_name, "/dev/ttyACM0") != 0 && strcmp(uart_name, "/dev/ttyACM1") != 0) {

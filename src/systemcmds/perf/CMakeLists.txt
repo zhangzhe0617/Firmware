@@ -38,5 +38,6 @@ px4_add_module(
 	SRCS
 		perf.c
 	DEPENDS
-		perf
+		platforms__common
 	)
+# vim: set noet ft=cmake fenc=utf-8 ff=unix :

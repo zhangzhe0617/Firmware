@@ -48,7 +48,7 @@
 class MavlinkShell
 {
 public:
-	MavlinkShell() = default;
+	MavlinkShell();
 
 	~MavlinkShell();
 
@@ -58,6 +58,7 @@ public:
 	 * @return		0 on success.
 	 */
 	int		start();
+
 
 	/**
 	 * Write to the shell

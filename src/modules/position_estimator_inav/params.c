@@ -340,7 +340,6 @@ PARAM_DEFINE_FLOAT(INAV_LIDAR_OFF, 0.0f);
  * @reboot_required true
  * @min 0
  * @max 328754
- * @category Developer
  * @group Position Estimator INAV
  */
 PARAM_DEFINE_INT32(CBRK_NO_VISION, 0);

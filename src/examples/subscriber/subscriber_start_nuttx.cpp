@@ -39,6 +39,7 @@
 #include <string.h>
 #include <cstdlib>
 #include <systemlib/err.h>
+#include <systemlib/systemlib.h>
 
 extern bool thread_running;
 int daemon_task;             /**< Handle of deamon task / thread */

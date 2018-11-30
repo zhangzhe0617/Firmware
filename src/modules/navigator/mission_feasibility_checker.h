@@ -39,10 +39,12 @@
  * @author Sander Smeets <sander@droneslab.com>
  */
 
-#pragma once
+#ifndef MISSION_FEASIBILITY_CHECKER_H_
+#define MISSION_FEASIBILITY_CHECKER_H_
 
 #include <dataman/dataman.h>
 #include <uORB/topics/mission.h>
+#include <uORB/topics/fw_pos_ctrl_status.h>
 
 class Geofence;
 class Navigator;
@@ -53,22 +55,29 @@ private:
 	Navigator *_navigator{nullptr};
 
 	/* Checks for all airframes */
-	bool checkGeofence(const mission_s &mission, float home_alt, bool home_valid);
+	bool checkGeofence(dm_item_t dm_current, size_t nMissionItems, Geofence &geofence, float home_alt, bool home_valid);
 
-	bool checkHomePositionAltitude(const mission_s &mission, float home_alt, bool home_alt_valid, bool throw_error);
+	bool checkHomePositionAltitude(dm_item_t dm_current, size_t nMissionItems, float home_alt, bool home_alt_valid,
+				       bool &warning_issued, bool throw_error = false);
 
-	bool checkMissionItemValidity(const mission_s &mission);
+	bool checkMissionItemValidity(dm_item_t dm_current, size_t nMissionItems, bool condition_landed);
 
-	bool checkDistanceToFirstWaypoint(const mission_s &mission, float max_distance);
-	bool checkDistancesBetweenWaypoints(const mission_s &mission, float max_distance);
+	bool checkDistanceToFirstWaypoint(dm_item_t dm_current, size_t nMissionItems, float max_distance, bool &warning_issued);
+	bool checkDistancesBetweenWaypoints(dm_item_t dm_current, size_t nMissionItems, float max_distance,
+					    bool &warning_issued);
 
 	/* Checks specific to fixedwing airframes */
-	bool checkFixedwing(const mission_s &mission, float home_alt, bool home_alt_valid, bool land_start_req);
-	bool checkFixedWingTakeoff(const mission_s &mission, float home_alt, bool home_alt_valid);
-	bool checkFixedWingLanding(const mission_s &mission, bool land_start_req);
+	bool checkFixedwing(dm_item_t dm_current, size_t nMissionItems, fw_pos_ctrl_status_s *fw_pos_ctrl_status,
+			    float home_alt, bool home_alt_valid, float default_acceptance_rad, bool land_start_req);
+
+	bool checkFixedWingTakeoff(dm_item_t dm_current, size_t nMissionItems, float home_alt, bool home_alt_valid,
+				   float default_acceptance_rad);
+	bool checkFixedWingLanding(dm_item_t dm_current, size_t nMissionItems, fw_pos_ctrl_status_s *fw_pos_ctrl_status,
+				   bool land_start_req);
 
 	/* Checks specific to rotarywing airframes */
-	bool checkRotarywing(const mission_s &mission, float home_alt, bool home_alt_valid);
+	bool checkRotarywing(dm_item_t dm_current, size_t nMissionItems,
+			     float home_alt, bool home_alt_valid, float default_altitude_acceptance_rad);
 
 public:
 	MissionFeasibilityChecker(Navigator *navigator) : _navigator(navigator) {}
@@ -86,3 +95,4 @@ public:
 
 };
 
+#endif /* MISSION_FEASIBILITY_CHECKER_H_ */

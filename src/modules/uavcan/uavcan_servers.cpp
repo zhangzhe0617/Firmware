@@ -32,7 +32,6 @@
  ****************************************************************************/
 
 #include <px4_tasks.h>
-#include <drivers/drv_hrt.h>
 
 #include <nuttx/config.h>
 
@@ -43,8 +42,10 @@
 #include <pthread.h>
 #include <mathlib/mathlib.h>
 #include <systemlib/err.h>
-#include <parameters/param.h>
+#include <systemlib/systemlib.h>
+#include <systemlib/param/param.h>
 #include <lib/mixer/mixer.h>
+#include <systemlib/board_serial.h>
 #include <version/version.h>
 #include <arch/board/board.h>
 #include <arch/chip/chip.h>
@@ -80,8 +81,8 @@
 UavcanServers *UavcanServers::_instance;
 UavcanServers::UavcanServers(uavcan::INode &main_node) :
 	_subnode_thread(-1),
-	_vdriver(NumIfaces, UAVCAN_DRIVER::SystemClock::instance(), main_node.getAllocator(), VirtualIfaceBlockAllocationQuota),
-	_subnode(_vdriver, UAVCAN_DRIVER::SystemClock::instance(), main_node.getAllocator()),
+	_vdriver(NumIfaces, uavcan_stm32::SystemClock::instance(), main_node.getAllocator(), VirtualIfaceBlockAllocationQuota),
+	_subnode(_vdriver, uavcan_stm32::SystemClock::instance(), main_node.getAllocator()),
 	_main_node(main_node),
 	_server_instance(_subnode, _storage_backend, _tracer),
 	_fileserver_backend(_subnode),
@@ -564,12 +565,16 @@ pthread_addr_t UavcanServers::run(pthread_addr_t)
 			}
 
 			// Acknowledge the received command
-			vehicle_command_ack_s ack = {};
-			ack.timestamp = hrt_absolute_time();
-			ack.command = cmd.command;
-			ack.result = cmd_ack_result;
-			ack.target_system = cmd.source_system;
-			ack.target_component = cmd.source_component;
+			struct vehicle_command_ack_s ack = {
+				.timestamp = 0,
+				.result_param2 = 0,
+				.command = cmd.command,
+				.result = cmd_ack_result,
+				.from_external = false,
+				.result_param1 = 0,
+				.target_system = cmd.source_system,
+				.target_component = cmd.source_component
+			};
 
 			if (_command_ack_pub == nullptr) {
 				_command_ack_pub = orb_advertise_queue(ORB_ID(vehicle_command_ack), &ack, vehicle_command_ack_s::ORB_QUEUE_LENGTH);

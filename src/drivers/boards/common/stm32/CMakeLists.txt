@@ -31,11 +31,17 @@
 #
 ############################################################################
 
-add_library(drivers_boards_common_arch
+set(SRCS
 	board_identity.c
-	board_mcu_version.c
-	board_reset.c
-	board_hw_rev_ver.c
 )
-add_dependencies(drivers_boards_common_arch prebuild_targets)
-target_link_libraries(drivers_boards_common_arch PRIVATE nuttx_arch)
+
+if (NOT ${LABEL} STREQUAL "bootloader")
+	list(APPEND SRCS
+		board_mcu_version.c
+		board_reset.c
+		board_hw_rev_ver.c
+		)
+endif()
+
+px4_add_library(board_stm32 ${SRCS})
+add_dependencies(board_stm32 nuttx_build)

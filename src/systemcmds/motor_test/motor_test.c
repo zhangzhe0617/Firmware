@@ -53,6 +53,7 @@
 #include <uORB/topics/test_motor.h>
 
 
+#include "systemlib/systemlib.h"
 
 
 __EXPORT int motor_test_main(int argc, char *argv[]);

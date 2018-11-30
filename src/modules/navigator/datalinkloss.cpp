@@ -44,7 +44,7 @@
 
 #include <systemlib/mavlink_log.h>
 #include <systemlib/err.h>
-#include <lib/ecl/geo/geo.h>
+#include <geo/geo.h>
 #include <navigator/navigation.h>
 
 #include <uORB/uORB.h>
@@ -54,10 +54,29 @@
 #include "navigator.h"
 #include "datalinkloss.h"
 
-DataLinkLoss::DataLinkLoss(Navigator *navigator) :
-	MissionBlock(navigator),
-	ModuleParams(navigator),
+#define DELAY_SIGMA	0.01f
+
+DataLinkLoss::DataLinkLoss(Navigator *navigator, const char *name) :
+	MissionBlock(navigator, name),
+	_param_commsholdwaittime(this, "CH_T"),
+	_param_commsholdlat(this, "CH_LAT"),
+	_param_commsholdlon(this, "CH_LON"),
+	_param_commsholdalt(this, "CH_ALT"),
+	_param_airfieldhomelat(this, "NAV_AH_LAT", false),
+	_param_airfieldhomelon(this, "NAV_AH_LON", false),
+	_param_airfieldhomealt(this, "NAV_AH_ALT", false),
+	_param_airfieldhomewaittime(this, "AH_T"),
+	_param_numberdatalinklosses(this, "N"),
+	_param_skipcommshold(this, "CHSK"),
 	_dll_state(DLL_STATE_NONE)
+{
+	/* load initial params */
+	updateParams();
+	/* initial reset */
+	on_inactive();
+}
+
+DataLinkLoss::~DataLinkLoss()
 {
 }
 
@@ -92,7 +111,7 @@ DataLinkLoss::set_dll_item()
 {
 	struct position_setpoint_triplet_s *pos_sp_triplet = _navigator->get_position_setpoint_triplet();
 
-	pos_sp_triplet->previous = pos_sp_triplet->current;
+	set_previous_pos_setpoint();
 	_navigator->set_can_loiter_at_sp(false);
 
 	switch (_dll_state) {

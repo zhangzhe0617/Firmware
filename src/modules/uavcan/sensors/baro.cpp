@@ -45,7 +45,7 @@ UavcanBarometerBridge::UavcanBarometerBridge(uavcan::INode &node) :
 	UavcanCDevSensorBridgeBase("uavcan_baro", "/dev/uavcan/baro", BARO_BASE_DEVICE_PATH, ORB_ID(sensor_baro)),
 	_sub_air_pressure_data(node),
 	_sub_air_temperature_data(node),
-	_reports(2, sizeof(sensor_baro_s))
+	_reports(2, sizeof(baro_report))
 { }
 
 int UavcanBarometerBridge::init()
@@ -75,8 +75,8 @@ int UavcanBarometerBridge::init()
 
 ssize_t UavcanBarometerBridge::read(struct file *filp, char *buffer, size_t buflen)
 {
-	unsigned count = buflen / sizeof(sensor_baro_s);
-	sensor_baro_s *baro_buf = reinterpret_cast<sensor_baro_s *>(buffer);
+	unsigned count = buflen / sizeof(struct baro_report);
+	struct baro_report *baro_buf = reinterpret_cast<struct baro_report *>(buffer);
 	int ret = 0;
 
 	/* buffer must be large enough */
@@ -98,8 +98,41 @@ ssize_t UavcanBarometerBridge::read(struct file *filp, char *buffer, size_t bufl
 int UavcanBarometerBridge::ioctl(struct file *filp, int cmd, unsigned long arg)
 {
 	switch (cmd) {
+	case BAROIOCSMSLPRESSURE: {
+			if ((arg < 80000) || (arg > 120000)) {
+				return -EINVAL;
+
+			} else {
+				DEVICE_LOG("new msl pressure %u", _msl_pressure);
+				_msl_pressure = arg;
+				return OK;
+			}
+		}
+
+	case BAROIOCGMSLPRESSURE: {
+			return _msl_pressure;
+		}
+
 	case SENSORIOCSPOLLRATE: {
 			// not supported yet, pretend that everything is ok
+			return OK;
+		}
+
+	case SENSORIOCSQUEUEDEPTH: {
+			/* lower bound is mandatory, upper bound is a sanity check */
+			if ((arg < 1) || (arg > 100)) {
+				return -EINVAL;
+			}
+
+			irqstate_t flags = px4_enter_critical_section();
+
+			if (!_reports.resize(arg)) {
+				px4_leave_critical_section(flags);
+				return -ENOMEM;
+			}
+
+			px4_leave_critical_section(flags);
+
 			return OK;
 		}
 
@@ -118,7 +151,7 @@ void UavcanBarometerBridge::air_temperature_sub_cb(const
 void UavcanBarometerBridge::air_pressure_sub_cb(const
 		uavcan::ReceivedDataStructure<uavcan::equipment::air_data::StaticPressure> &msg)
 {
-	sensor_baro_s report{};
+	baro_report report;
 
 	/*
 	 * FIXME HACK
@@ -134,6 +167,20 @@ void UavcanBarometerBridge::air_pressure_sub_cb(const
 
 	/* TODO get device ID for sensor */
 	report.device_id = 0;
+
+	/*
+	 * Altitude computation
+	 * Refer to the MS5611 driver for details
+	 */
+	const double T1 = 15.0 + 273.15; // temperature at base height in Kelvin
+	const double a  = -6.5 / 1000;   // temperature gradient in degrees per metre
+	const double g  = 9.80665;       // gravity constant in m/s/s
+	const double R  = 287.05;        // ideal gas constant in J/kg/K
+
+	const double p1 = _msl_pressure / 1000.0;      // current pressure at MSL in kPa
+	const double p = double(msg.static_pressure) / 1000.0; // measured pressure in kPa
+
+	report.altitude = (((std::pow((p / p1), (-(a * R) / g))) * T1) - T1) / a;
 
 	// add to the ring buffer
 	_reports.force(&report);

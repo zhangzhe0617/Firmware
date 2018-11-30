@@ -81,8 +81,6 @@ PARAM_DEFINE_FLOAT(RC1_MAX, 2000.0f);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC1_REV, 1.0f);
@@ -142,8 +140,6 @@ PARAM_DEFINE_FLOAT(RC2_MAX, 2000.0f);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC2_REV, 1.0f);
@@ -203,12 +199,9 @@ PARAM_DEFINE_FLOAT(RC3_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC3_REV, 1.0f);
-
 /**
  * RC channel 3 dead zone
  *
@@ -264,8 +257,6 @@ PARAM_DEFINE_FLOAT(RC4_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC4_REV, 1.0f);
@@ -325,8 +316,6 @@ PARAM_DEFINE_FLOAT(RC5_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC5_REV, 1.0f);
@@ -385,8 +374,6 @@ PARAM_DEFINE_FLOAT(RC6_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC6_REV, 1.0f);
@@ -445,8 +432,6 @@ PARAM_DEFINE_FLOAT(RC7_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC7_REV, 1.0f);
@@ -505,8 +490,6 @@ PARAM_DEFINE_FLOAT(RC8_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC8_REV, 1.0f);
@@ -565,8 +548,6 @@ PARAM_DEFINE_FLOAT(RC9_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC9_REV, 1.0f);
@@ -625,8 +606,6 @@ PARAM_DEFINE_FLOAT(RC10_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC10_REV, 1.0f);
@@ -685,8 +664,6 @@ PARAM_DEFINE_FLOAT(RC11_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC11_REV, 1.0f);
@@ -745,8 +722,6 @@ PARAM_DEFINE_FLOAT(RC12_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC12_REV, 1.0f);
@@ -805,8 +780,6 @@ PARAM_DEFINE_FLOAT(RC13_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC13_REV, 1.0f);
@@ -865,8 +838,6 @@ PARAM_DEFINE_FLOAT(RC14_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC14_REV, 1.0f);
@@ -925,8 +896,6 @@ PARAM_DEFINE_FLOAT(RC15_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC15_REV, 1.0f);
@@ -985,8 +954,6 @@ PARAM_DEFINE_FLOAT(RC16_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC16_REV, 1.0f);
@@ -1045,8 +1012,6 @@ PARAM_DEFINE_FLOAT(RC17_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC17_REV, 1.0f);
@@ -1105,8 +1070,6 @@ PARAM_DEFINE_FLOAT(RC18_MAX, 2000);
  *
  * @min -1.0
  * @max 1.0
- * @value -1.0 Reverse
- * @value 1.0 Normal
  * @group Radio Calibration
  */
 PARAM_DEFINE_FLOAT(RC18_REV, 1.0f);
@@ -1133,6 +1096,7 @@ PARAM_DEFINE_FLOAT(RC18_DZ, 0.0f);
  * @max 18
  * @group Radio Calibration
  */
+
 PARAM_DEFINE_INT32(RC_CHAN_CNT, 0);
 
 /**
@@ -1556,10 +1520,7 @@ PARAM_DEFINE_INT32(RC_MAP_OFFB_SW, 0);
 PARAM_DEFINE_INT32(RC_MAP_KILL_SW, 0);
 
 /**
- * Arm switch channel.
- *
- * Use it to arm/disarm via switch instead of default throttle stick. If this is
- * assigned, arming and disarming via stick is disabled.
+ * Arm switch channel
  *
  * @min 0
  * @max 18
@@ -1991,6 +1952,8 @@ PARAM_DEFINE_INT32(RC_FAILS_THR, 0);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_ASSIST_TH, 0.25f);
 
@@ -2007,6 +1970,8 @@ PARAM_DEFINE_FLOAT(RC_ASSIST_TH, 0.25f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_AUTO_TH, 0.75f);
 
@@ -2023,6 +1988,7 @@ PARAM_DEFINE_FLOAT(RC_AUTO_TH, 0.75f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
  */
 PARAM_DEFINE_FLOAT(RC_RATT_TH, 0.5f);
 
@@ -2039,6 +2005,7 @@ PARAM_DEFINE_FLOAT(RC_RATT_TH, 0.5f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
  */
 PARAM_DEFINE_FLOAT(RC_POSCTL_TH, 0.5f);
 
@@ -2055,6 +2022,8 @@ PARAM_DEFINE_FLOAT(RC_POSCTL_TH, 0.5f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_RETURN_TH, 0.5f);
 
@@ -2071,6 +2040,8 @@ PARAM_DEFINE_FLOAT(RC_RETURN_TH, 0.5f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_LOITER_TH, 0.5f);
 
@@ -2087,6 +2058,8 @@ PARAM_DEFINE_FLOAT(RC_LOITER_TH, 0.5f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_ACRO_TH, 0.5f);
 
@@ -2103,6 +2076,8 @@ PARAM_DEFINE_FLOAT(RC_ACRO_TH, 0.5f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_OFFB_TH, 0.5f);
 
@@ -2119,6 +2094,8 @@ PARAM_DEFINE_FLOAT(RC_OFFB_TH, 0.5f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_KILLSWITCH_TH, 0.25f);
 
@@ -2135,6 +2112,8 @@ PARAM_DEFINE_FLOAT(RC_KILLSWITCH_TH, 0.25f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_ARMSWITCH_TH, 0.25f);
 
@@ -2151,6 +2130,8 @@ PARAM_DEFINE_FLOAT(RC_ARMSWITCH_TH, 0.25f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_TRANS_TH, 0.25f);
 
@@ -2167,6 +2148,8 @@ PARAM_DEFINE_FLOAT(RC_TRANS_TH, 0.25f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_GEAR_TH, 0.25f);
 
@@ -2183,6 +2166,8 @@ PARAM_DEFINE_FLOAT(RC_GEAR_TH, 0.25f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_STAB_TH, 0.5f);
 
@@ -2199,11 +2184,13 @@ PARAM_DEFINE_FLOAT(RC_STAB_TH, 0.5f);
  * @min -1
  * @max 1
  * @group Radio Switches
+ *
+ *
  */
 PARAM_DEFINE_FLOAT(RC_MAN_TH, 0.5f);
 
 /**
- * Sample rate of the remote control values for the low pass filter on roll, pitch, yaw and throttle
+ * Sample rate of the remote control values for the low pass filter on roll,pitch, yaw and throttle
  *
  * Has an influence on the cutoff frequency precision.
  *
@@ -2214,12 +2201,11 @@ PARAM_DEFINE_FLOAT(RC_MAN_TH, 0.5f);
 PARAM_DEFINE_FLOAT(RC_FLT_SMP_RATE, 50.0f);
 
 /**
- * Cutoff frequency for the low pass filter on roll, pitch, yaw and throttle
+ * Cutoff frequency for the low pass filter on roll,pitch, yaw and throttle
  *
  * Does not get set unless below RC_FLT_SMP_RATE/2 because of filter instability characteristics.
- * Set to 0 to disable the filter.
  *
- * @min 0
+ * @min 0.1
  * @unit Hz
  * @group Radio Calibration
  */

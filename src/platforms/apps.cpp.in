@@ -10,8 +10,6 @@
 
 #include <cstdlib>
 
-#define MODULE_NAME "px4"
-
 extern "C" {
 
 ${builtin_apps_decl_string}
@@ -50,7 +48,7 @@ void list_builtins(apps_map_type &apps)
 int shutdown_main(int argc, char *argv[])
 {
 	printf("Shutting down\n");
-	system_exit(0);
+	exit(0);
 }
 
 int list_tasks_main(int argc, char *argv[])

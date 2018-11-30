@@ -58,11 +58,6 @@ enum FIRMWARE_TYPE {
 	FIRMWARE_TYPE_RELEASE = 255
 };
 
-const char *px4_build_uri(void)
-{
-	return STRINGIFY(BUILD_URI);
-}
-
 uint32_t version_tag_to_number(const char *tag)
 {
 	uint32_t version_number = 0;
@@ -258,8 +253,8 @@ uint32_t px4_board_version(void)
 
 uint32_t px4_os_version(void)
 {
-#if defined(__PX4_DARWIN) || defined(__PX4_CYGWIN) || defined(__PX4_QURT)
-	return 0; //TODO: implement version for Darwin, Cygwin, QuRT
+#if defined(__PX4_DARWIN)
+	return 0; //TODO: implement version for Darwin
 #elif defined(__PX4_LINUX)
 	struct utsname name;
 
@@ -278,6 +273,8 @@ uint32_t px4_os_version(void)
 		return 0;
 	}
 
+#elif defined(__PX4_QURT)
+	return 0; //TODO: implement version for QuRT
 #elif defined(__PX4_NUTTX)
 	return version_tag_to_number(NUTTX_GIT_TAG_STR);
 #else
@@ -304,8 +301,6 @@ const char *px4_os_name(void)
 	return "QuRT";
 #elif defined(__PX4_NUTTX)
 	return "NuttX";
-#elif defined(__PX4_CYGWIN)
-	return "Cygwin";
 #else
 # error "px4_os_name not implemented for current OS"
 #endif
@@ -345,28 +340,14 @@ uint64_t px4_firmware_version_binary(void)
 	return PX4_GIT_VERSION_BINARY;
 }
 
-const char *px4_ecl_lib_version_string(void)
-{
-#ifdef ECL_LIB_GIT_VERSION_STRING
-	return ECL_LIB_GIT_VERSION_STRING;
-#else
-	return NULL;
-#endif
-}
-
-#ifdef MAVLINK_LIB_GIT_VERSION_BINARY
 uint64_t px4_mavlink_lib_version_binary(void)
 {
 	return MAVLINK_LIB_GIT_VERSION_BINARY;
 }
-#endif /* MAVLINK_LIB_GIT_VERSION_BINARY */
 
 uint64_t px4_os_version_binary(void)
 {
-#ifdef NUTTX_GIT_VERSION_BINARY
-	return NUTTX_GIT_VERSION_BINARY;
-#else
+	//TODO: get NuttX version via git tag
 	return 0;
-#endif
 }
 

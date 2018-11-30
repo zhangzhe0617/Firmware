@@ -38,7 +38,14 @@
  *
  * @author Mohamed Abdelkader <mohamedashraf123@gmail.com>
  */
-#include <parameters/param.h>
+#include <systemlib/param/param.h>
+
+/**
+ * Simulator UDP port
+ *
+ * @group SITL
+ */
+PARAM_DEFINE_INT32(SITL_UDP_PRT, 14560);
 
 /**
  * Simulator Battery drain interval

@@ -36,7 +36,7 @@
  */
 
 #include <px4_config.h>
-#include <parameters/param.h>
+#include <systemlib/param/param.h>
 
 /**
  * UAVCAN Node ID.

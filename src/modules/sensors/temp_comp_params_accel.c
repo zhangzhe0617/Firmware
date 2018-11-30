@@ -40,12 +40,11 @@
  */
 
 /**
- * Thermal compensation for accelerometer sensors.
+ * Set to 1 to enable thermal compensation for accelerometer sensors. Set to 0 to disable.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  * @min 0
  * @max 1
- * @boolean
  */
 PARAM_DEFINE_INT32(TC_A_ENABLE, 0);
 
@@ -54,133 +53,133 @@ PARAM_DEFINE_INT32(TC_A_ENABLE, 0);
 /**
  * ID of Accelerometer that the calibration is for.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_INT32(TC_A0_ID, 0);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X3_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X3_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X3_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X2_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X2_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X2_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X1_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X1_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X1_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X0_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X0_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_X0_2, 0.0f);
 
 /**
  * Accelerometer scale factor - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_SCL_0, 1.0f);
 
 /**
  * Accelerometer scale factor - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_SCL_1, 1.0f);
 
 /**
  * Accelerometer scale factor - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_SCL_2, 1.0f);
 
 /**
  * Accelerometer calibration reference temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_TREF, 25.0f);
 
 /**
  * Accelerometer calibration minimum temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_TMIN, 0.0f);
 
 /**
  * Accelerometer calibration maximum temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A0_TMAX, 100.0f);
 
@@ -189,133 +188,133 @@ PARAM_DEFINE_FLOAT(TC_A0_TMAX, 100.0f);
 /**
  * ID of Accelerometer that the calibration is for.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_INT32(TC_A1_ID, 0);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X3_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X3_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X3_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X2_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X2_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X2_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X1_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X1_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X1_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X0_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X0_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_X0_2, 0.0f);
 
 /**
  * Accelerometer scale factor - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_SCL_0, 1.0f);
 
 /**
  * Accelerometer scale factor - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_SCL_1, 1.0f);
 
 /**
  * Accelerometer scale factor - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_SCL_2, 1.0f);
 
 /**
  * Accelerometer calibration reference temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_TREF, 25.0f);
 
 /**
  * Accelerometer calibration minimum temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_TMIN, 0.0f);
 
 /**
  * Accelerometer calibration maximum temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A1_TMAX, 100.0f);
 
@@ -324,132 +323,132 @@ PARAM_DEFINE_FLOAT(TC_A1_TMAX, 100.0f);
 /**
  * ID of Accelerometer that the calibration is for.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_INT32(TC_A2_ID, 0);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X3_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X3_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^3 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X3_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X2_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X2_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^2 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X2_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X1_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X1_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^1 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X1_2, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X0_0, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X0_1, 0.0f);
 
 /**
  * Accelerometer offset temperature ^0 polynomial coefficient - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_X0_2, 0.0f);
 
 /**
  * Accelerometer scale factor - X axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_SCL_0, 1.0f);
 
 /**
  * Accelerometer scale factor - Y axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_SCL_1, 1.0f);
 
 /**
  * Accelerometer scale factor - Z axis.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_SCL_2, 1.0f);
 
 /**
  * Accelerometer calibration reference temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_TREF, 25.0f);
 
 /**
  * Accelerometer calibration minimum temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_TMIN, 0.0f);
 
 /**
  * Accelerometer calibration maximum temperature.
  *
- * @group Thermal Compensation
+ * @group Sensor Thermal Compensation
  */
 PARAM_DEFINE_FLOAT(TC_A2_TMAX, 100.0f);

@@ -37,39 +37,44 @@
  * @author Thomas Gubler <thomasgubler@gmail.com>
  */
 
-#pragma once
+#ifndef NAVIGATOR_DATALINKLOSS_H
+#define NAVIGATOR_DATALINKLOSS_H
 
-#include <px4_module_params.h>
+#include <controllib/blocks.hpp>
+#include <controllib/block/BlockParam.hpp>
+
+#include <uORB/Subscription.hpp>
 
 #include "navigator_mode.h"
 #include "mission_block.h"
 
 class Navigator;
 
-class DataLinkLoss : public MissionBlock, public ModuleParams
+class DataLinkLoss : public MissionBlock
 {
 public:
-	DataLinkLoss(Navigator *navigator);
+	DataLinkLoss(Navigator *navigator, const char *name);
 
-	~DataLinkLoss() = default;
+	~DataLinkLoss();
 
-	void on_inactive() override;
-	void on_activation() override;
-	void on_active() override;
+	virtual void on_inactive();
+
+	virtual void on_activation();
+
+	virtual void on_active();
 
 private:
-	DEFINE_PARAMETERS(
-		(ParamFloat<px4::params::NAV_DLL_CH_T>) _param_commsholdwaittime,
-		(ParamInt<px4::params::NAV_DLL_CH_LAT>) _param_commsholdlat, // * 1e7
-		(ParamInt<px4::params::NAV_DLL_CH_LON>) _param_commsholdlon, // * 1e7
-		(ParamFloat<px4::params::NAV_DLL_CH_ALT>) _param_commsholdalt,
-		(ParamInt<px4::params::NAV_AH_LAT>) _param_airfieldhomelat, // * 1e7
-		(ParamInt<px4::params::NAV_AH_LON>) _param_airfieldhomelon, // * 1e7
-		(ParamFloat<px4::params::NAV_AH_ALT>) _param_airfieldhomealt,
-		(ParamFloat<px4::params::NAV_DLL_AH_T>) _param_airfieldhomewaittime,
-		(ParamInt<px4::params::NAV_DLL_N>) _param_numberdatalinklosses,
-		(ParamInt<px4::params::NAV_DLL_CHSK>) _param_skipcommshold
-	)
+	/* Params */
+	control::BlockParamFloat _param_commsholdwaittime;
+	control::BlockParamInt _param_commsholdlat; // * 1e7
+	control::BlockParamInt _param_commsholdlon; // * 1e7
+	control::BlockParamFloat _param_commsholdalt;
+	control::BlockParamInt _param_airfieldhomelat; // * 1e7
+	control::BlockParamInt _param_airfieldhomelon; // * 1e7
+	control::BlockParamFloat _param_airfieldhomealt;
+	control::BlockParamFloat _param_airfieldhomewaittime;
+	control::BlockParamInt _param_numberdatalinklosses;
+	control::BlockParamInt _param_skipcommshold;
 
 	enum DLLState {
 		DLL_STATE_NONE = 0,
@@ -77,7 +82,7 @@ private:
 		DLL_STATE_FLYTOAIRFIELDHOMEWP = 2,
 		DLL_STATE_TERMINATE = 3,
 		DLL_STATE_END = 4
-	} _dll_state{DLL_STATE_NONE};
+	} _dll_state;
 
 	/**
 	 * Set the DLL item
@@ -90,3 +95,4 @@ private:
 	void		advance_dll();
 
 };
+#endif

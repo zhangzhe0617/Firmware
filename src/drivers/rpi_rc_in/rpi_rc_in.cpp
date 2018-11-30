@@ -50,7 +50,7 @@ int RcInput::rpi_rc_init()
 {
 	int i;
 
-	// initialize shared memory
+	//--------------初始化共享内存映射----------------------------//
 	if ((_shmid = shmget(_key, sizeof(int) * _channels, 0666)) < 0) {
 		PX4_WARN("Faild to access shared memory");
 		return -1;
@@ -61,7 +61,7 @@ int RcInput::rpi_rc_init()
 		return -1;
 	}
 
-	// publish data for all channels
+	//--------------发布所有通道的数据------------------------//
 	for (i = 0; i < input_rc_s::RC_INPUT_MAX_CHANNELS; ++i) {
 		_data.values[i] = UINT16_MAX;
 	}
@@ -113,7 +113,7 @@ void RcInput::_cycle()
 void RcInput::_measure(void)
 {
 	uint64_t ts;
-	// publish PWM data
+	// PWM数据发布
 	// read pwm value from shared memory
 	int i = 0;
 
@@ -163,7 +163,7 @@ int rpi_rc_in_main(int argc, char **argv)
 
 		if (rc_input != nullptr && rc_input->is_running()) {
 			PX4_INFO("already running");
-			// this is not an error
+			/* this is not an error */
 			return 0;
 		}
 
@@ -188,7 +188,7 @@ int rpi_rc_in_main(int argc, char **argv)
 
 		if (rc_input == nullptr || !rc_input->is_running()) {
 			PX4_WARN("Not running");
-			// this is not an error
+			/* this is not an error */
 			return 0;
 		}
 
@@ -198,7 +198,7 @@ int rpi_rc_in_main(int argc, char **argv)
 		int i = 0;
 
 		do {
-			// wait for 100ms
+			/* wait up to 3s */
 			usleep(100000);
 
 		} while (rc_input->is_running() && ++i < 30);
